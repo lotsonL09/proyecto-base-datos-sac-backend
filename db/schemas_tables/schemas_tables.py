@@ -90,7 +90,7 @@ equipo_table=Table(
     'equipo',
     metadata_obj,
     Column('IdEquipo',primary_key=True,autoincrement=True),
-    Column('Descripcion',String(100)),
+    Column('Descripción',String(100)),
     Column('Procedencia',String(200)),
     Column('Año_adquisicion',String(50)),
     Column('IdTipo',Integer,ForeignKey('tipo.IdTipo')),
@@ -182,7 +182,7 @@ proyec_invest_table=Table(
 paper_autor_table=Table(
     'Paper_Autor',
     metadata_obj,
-    Column('Paper_idP',ForeignKey('proyectos.idProyec'),primary_key=True),
+    Column('paper_idP',ForeignKey('proyectos.idProyec'),primary_key=True),
     Column('idMiembro',ForeignKey('miembros.idMiembro'),primary_key=True),
 )
 
