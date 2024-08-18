@@ -1,7 +1,11 @@
-from flask import Blueprint
+#from flask import Blueprint
 
-update_bp=Blueprint('update',__name__,url_prefix='/update')
+from fastapi import APIRouter
 
-@update_bp.route('/')
+#update_bp=Blueprint('update',__name__,url_prefix='/update')
+
+update=APIRouter(prefix='/update')
+
+@update.get('/')
 def root_update():
     return 'update Page'

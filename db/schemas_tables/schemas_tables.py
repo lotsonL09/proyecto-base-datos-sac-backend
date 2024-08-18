@@ -1,4 +1,4 @@
-from sqlalchemy import Table,Column, Integer,String,CheckConstraint
+from sqlalchemy import Table,Column, Integer,String,CheckConstraint,Boolean
 from sqlalchemy import MetaData
 from sqlalchemy import ForeignKey
 
@@ -187,12 +187,16 @@ paper_autor_table=Table(
 )
 
 usuario_table=Table(
-    'Usuario',
+    'Usuario_2',
     metadata_obj,
-    Column('idusuario',primary_key=True,autoincrement=True),
+    Column('id_usuario',Integer,primary_key=True,autoincrement=True),
     Column('user_name',String(100)),
-    Column('contraseña',String(102)),
-    Column('fullname',String(100)),
-    Column('categoria',String(50))
+    Column('password',String(100)),
+    Column('first_name',String(100)),
+    Column('last_name',String(100)),
+    Column('email',String(100)),
+    Column('category',String(50)),
+    Column('phone',String(20)),
+    Column('disabled',Boolean)
 )
 

@@ -1,7 +1,11 @@
-from flask import Blueprint
+#from flask import Blueprint
 
-delete_bp=Blueprint('delete',__name__,url_prefix='/delete')
+from fastapi import APIRouter
 
-@delete_bp.route('/')
+#delete_bp=Blueprint('delete',__name__,url_prefix='/delete')
+
+delete=APIRouter(prefix='/delete')
+
+@delete.get('/')
 def root_delete():
     return 'delete Page'

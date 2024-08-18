@@ -1,7 +1,11 @@
-from flask import Blueprint
+#from flask import Blueprint
 
-download_bp=Blueprint('download',__name__,url_prefix='/download')
+from fastapi import APIRouter
 
-@download_bp.route('/')
+#download_bp=Blueprint('download',__name__,url_prefix='/download')
+
+download=APIRouter(prefix='/download')
+
+@download.get('/')
 def root_download():
     return 'download Page'
