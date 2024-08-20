@@ -10,7 +10,7 @@ from db.db_session import engine
 Session=sessionmaker(engine)
 
 columns_data={
-    'books':['Título','Autor','Ubicación','Estado','Prestado a'],
+    'books':['Título','Autor','Ubicación','Estado','Prestadoa'],
     'equipments':['Descripción','Tipo','Procedencia','Año de adquisición','Ubicación','Estado'],
     'papers':['Título','Miembros','Año','Link'],
     'proyects':['Proyecto','Coordinador UDEP','Investigadores UDEP','Convenio','Estado','Año de Inicio','Año de Finalización'],
@@ -20,12 +20,16 @@ columns_data={
 #HACER DESPUES EL DE MIEMBROS
 
 def get_json(section:str,data:Tuple):
+    print(data)
     columns=columns_data[section]
     dict_json={}
     for key,value in zip(columns,data):
         if type(value) is not str:
             dict_json[key]=value
         else:
+            if key=='Autor' and (len(value.split(';')) == 1):
+                dict_json[key]=[value]
+                continue
             if len(value.split(';')) > 1:
                 dict_json[key]=value.split(';')[:-1]
             else:
