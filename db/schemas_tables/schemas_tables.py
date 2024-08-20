@@ -28,7 +28,7 @@ metadata_obj=MetaData()
 autor_table = Table(
     'autor',
     metadata_obj,
-    Column('IdAutor',primary_key=True,autoincrement=True),
+    Column('IdAutor',Integer,primary_key=True,autoincrement=True),
     Column('Autor',String(200))
 )
 
@@ -49,7 +49,7 @@ estado_table=Table(
 persona_table=Table(
     'persona',
     metadata_obj,
-    Column('IdPersona',primary_key=True,autoincrement=True),
+    Column('IdPersona',Integer,primary_key=True,autoincrement=True),
     Column('Nombre',String(75)),
     Column('Apellido',String(75)),
 )
@@ -57,7 +57,7 @@ persona_table=Table(
 titulo_table=Table(
     'titulo',
     metadata_obj,
-    Column('IdTitulo',primary_key=True,autoincrement=True),
+    Column('IdTitulo',Integer,primary_key=True,autoincrement=True),
     Column('Titulo',String(300)),
     Column('Cantidad',Integer)
 )
@@ -65,7 +65,7 @@ titulo_table=Table(
 libro_table=Table(
     'libro',
     metadata_obj,
-    Column('IdLibro',primary_key=True,autoincrement=True),
+    Column('IdLibro',Integer,primary_key=True,autoincrement=True),
     Column('IdTitulo',ForeignKey('libro.IdTitulo')),
     Column('IdUbi',ForeignKey('ubicación.IdUbi')),
     Column('IdPersona',ForeignKey('persona.IdPersona')),

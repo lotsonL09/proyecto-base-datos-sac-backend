@@ -6,11 +6,7 @@ from passlib.context import CryptContext
 
 from entities.user import User_DB,User
 
-from extra.helper_functions import get_user,search_on_db
-from extra.helper_functions import insert_user
-
-from db.querries.users import querry_get_users_db
-
+from db.querries.users import get_user,get_user_db,insert_user
 
 login=APIRouter(prefix='/login',
                 tags=['Login site'],
@@ -26,7 +22,7 @@ pwd_context=CryptContext(schemes=['bcrypt'])
 @login.post('/')
 async def login_root(form:OAuth2PasswordRequestForm=Depends()):
 
-    user=search_on_db(form.username)
+    user=get_user_db(form.username)
 
     if not type(user) == User_DB:
         raise HTTPException(
@@ -59,20 +55,6 @@ async def register_user(user:User_DB)->User:
     user_data=insert_user(user=user)
 
     return user_data
-
-
-# @login.post('/token')
-# async def login_token(form_data:OAuth2PasswordRequestForm=Depends()):
-#     print('ALGO')
-#     print(form_data)
-#     user_name=form_data.username
-#     password=form_data.password
-#     return {
-#         "access_token":user_name,
-#         "token_type":"bearer"
-#     }
-
-#CRITERIOS DE DEPENDENCIA
 
 async def get_current_user(token:str=Depends(oauth2_scheme)):
     user_name=token

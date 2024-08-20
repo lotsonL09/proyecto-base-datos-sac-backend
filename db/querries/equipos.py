@@ -1,6 +1,6 @@
 from sqlalchemy import Select
 
-from db.schemas_tables.schemas_tables import equipo_table,tipo_table,ubicacion_table,estado_table,autor_table
+from db.schemas_tables.schemas_tables import equipo_table,tipo_table,ubicacion_table,estado_table
 
 
 querry_get_equipments=(Select(
