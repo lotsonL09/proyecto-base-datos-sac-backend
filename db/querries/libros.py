@@ -98,8 +98,8 @@ def get_id_author(author:str):
     if id_author is None:
         id_author=insert_author(author)
         return id_author
-    
-    return id_author
+    else:
+        return id_author[0]
 
 def get_id_persona(persona:Borrowed_to|None):
     if persona is None: #TODO: PREGUNTAR A ALVARO SOBRE ESTO
@@ -118,14 +118,14 @@ def get_id_persona(persona:Borrowed_to|None):
 def get_id_location(location):
     querry=querry_get_id_location.where(ubicacion_table.c.ubicacion == location)
 
-    id_location=execute_get(querry=querry)
+    id_location=execute_get(querry=querry)[0]
 
     return id_location
 
 def get_id_status(status):
     querry=querry_get_id_status.where(estado_table.c.estado == status)
 
-    id_status=execute_get(querry=querry)
+    id_status=execute_get(querry=querry)[0]
 
     return id_status
 
@@ -217,16 +217,14 @@ def create_register_book(book:Book):
 
     id_persona=get_id_persona(persona=book.borrowed_to)
 
-    print('ids para la db: ',id_title,id_location,id_status,id_author)
-    id_register_book=insert_book(id_title=id_title,id_location=id_location,
-                    id_status=id_status,id_persona=id_persona)
-    
-    print('Id del registro en libro',id_register_book)
-
     for id_author in id_authors:
-        print('Id del registro en titulo autor',id_register_title_author)
         id_register_title_author=insert_title_author(id_title=id_title,
                                                     id_author=id_author)
 
+    id_register_book=insert_book(id_title=id_title,id_location=id_location,
+                    id_status=id_status,id_persona=id_persona)
+
     return 'Registro realizado'
 
+def update_register_book(book:Book):
+    return

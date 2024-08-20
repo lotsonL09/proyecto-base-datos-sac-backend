@@ -48,12 +48,11 @@ def get_id_querry(table,param):
 def execute_get(querry):
     with Session() as session:
         id=session.execute(querry).first()
-        id=id[0]
         return id
 
 def execute_insert(querry):
     with Session() as session:
         register_inserted=session.execute(querry)
         session.commit()
-        id=register_inserted.inserted_primary[0]
+        id=register_inserted.inserted_primary_key[0]
     return id

@@ -9,6 +9,8 @@ from entities.proyect import Proyect
 from entities.trabajo import Trabajo
 from entities.user import User
 
+from db.querries.libros import update_register_book
+
 update=APIRouter(prefix='/update')
 
 @update.get('/')
@@ -18,6 +20,7 @@ def root_update():
 
 @update.post('/libro')
 async def edit_book(book:Book):
+    result=update_register_book(book=book)
     print(book)
     return 'Done'
 
