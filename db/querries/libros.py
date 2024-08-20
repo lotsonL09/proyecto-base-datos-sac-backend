@@ -9,7 +9,7 @@ from db.schemas_tables.schemas_tables import titulo_table,estado_table
 
 from db.db_session import engine
 
-from entities.book import Borrowed_to
+from entities.book import Borrowed_to,Book
 
 from extra.helper_functions import execute_insert,get_id_querry,execute_get
 
@@ -197,4 +197,36 @@ def insert_title_author(id_title:str,id_author:id):
                                         id_author=id_author)
     id=execute_insert(querry=querry)
     return id
+
+
+#FUNCTIONS
+
+def create_register_book(book:Book):
+
+    id_title=get_id_title(title=book.title,
+                    amount=book.amount)
+
+    id_authors=[]
+    for author in book.author:
+        author_id=get_id_author(author.name)
+        id_authors.append(author_id)
+
+    id_location=get_id_location(location=book.location)
+
+    id_status=get_id_status(status=book.status)
+
+    id_persona=get_id_persona(persona=book.borrowed_to)
+
+    print('ids para la db: ',id_title,id_location,id_status,id_author)
+    id_register_book=insert_book(id_title=id_title,id_location=id_location,
+                    id_status=id_status,id_persona=id_persona)
+    
+    print('Id del registro en libro',id_register_book)
+
+    for id_author in id_authors:
+        print('Id del registro en titulo autor',id_register_title_author)
+        id_register_title_author=insert_title_author(id_title=id_title,
+                                                    id_author=id_author)
+
+    return 'Registro realizado'
 
