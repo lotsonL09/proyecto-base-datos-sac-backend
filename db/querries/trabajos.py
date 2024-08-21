@@ -3,6 +3,7 @@ from sqlalchemy import Select,desc
 from db.schemas_tables.schemas_tables import trabajos_table,cursos_table
 
 querry_get_trabajos=(Select(
+    trabajos_table.c.idCurso,
     trabajos_table.c.Título,
     cursos_table.c.Curso,
     trabajos_table.c.Año,

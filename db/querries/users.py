@@ -14,6 +14,7 @@ Session=sessionmaker(engine)
 
 
 querry_get_users=(Select(
+    usuario_table.c.id_usuario,
     usuario_table.c.user_name,
     usuario_table.c.first_name,
     usuario_table.c.last_name,

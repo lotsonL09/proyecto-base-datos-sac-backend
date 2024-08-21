@@ -11,6 +11,7 @@ class Agreement(BaseModel):
     name:str
 
 class Proyect(BaseModel):
+    id: int |None =None
     name:str | None = None 
     coordinator:Person | None = None
     researches:list[Person] | None = None

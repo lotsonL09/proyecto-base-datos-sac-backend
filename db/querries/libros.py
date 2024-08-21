@@ -41,13 +41,13 @@ SELECT
 #             ).label('autores'),
 
 querry_get_books=(Select(
+        libro_table.c.IdLibro,
         titulo_table.c.Titulo,
         func.aggregate_strings(autor_table.c.Autor,';').label('autores'),
         ubicacion_table.c.ubicacion,
         estado_table.c.estado,
         func.concat(persona_table.c.Nombre,' ',persona_table.c.Apellido).label('nombre_completo')
     )
-    .select_from(libro_table)
     .join(titulo_table        ,titulo_table.c.IdTitulo       ==    libro_table.c.IdTitulo)
     .join(titulo_autor_table  ,titulo_autor_table.c.IdTitulo ==    titulo_table.c.IdTitulo)
     .join(autor_table         ,autor_table.c.IdAutor         ==    titulo_autor_table.c.IdAutor)
@@ -56,6 +56,7 @@ querry_get_books=(Select(
     .join(persona_table       ,persona_table.c.IdPersona     ==    libro_table.c.IdPersona)
     .group_by(
         titulo_table.c.Titulo,
+        libro_table.c.IdLibro,
         ubicacion_table.c.ubicacion,
         estado_table.c.estado,
         persona_table.c.Nombre,

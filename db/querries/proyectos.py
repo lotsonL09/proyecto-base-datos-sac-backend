@@ -7,6 +7,7 @@ coordinador=miembros_table.alias('coordinador')
 investigador=miembros_table.alias('investigador')
 
 querry_get_proyectos=(Select(
+    proyectos_table.c.idProyec,
     proyectos_table.c.Proyecto,
     func.concat(coordinador.c.nombre,' ',coordinador.c.apellido).label('Coordinador'),
     func.aggregate_strings(

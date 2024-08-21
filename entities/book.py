@@ -8,6 +8,7 @@ class Borrowed_to(BaseModel):
     last_name:str
 
 class Book(BaseModel):
+    id:str|None=None
     title:str | None = None
     author:list[Author] | None = None
     location:str | None = None

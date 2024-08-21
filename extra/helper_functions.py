@@ -10,11 +10,11 @@ from db.db_session import engine
 Session=sessionmaker(engine)
 
 columns_data={
-    'books':['Título','Autor','Ubicación','Estado','Prestadoa'],
-    'equipments':['Descripción','Tipo','Procedencia','Año de adquisición','Ubicación','Estado'],
-    'papers':['Título','Miembros','Año','Link'],
-    'proyects':['Proyecto','Coordinador UDEP','Investigadores UDEP','Convenio','Estado','Año de Inicio','Año de Finalización'],
-    'trabajos':['Título','Curso','Año','Link']
+    'books':['id','title','author','location','status','borrowed_to'],
+    'equipments':['id','Description','type','origin','year','location','status'],
+    'papers':['id','title','members','year','link'],
+    'proyects':['id','proyect','coordinator','researches','agreement','status','year_start','year_end'],
+    'trabajos':['id','title','course','year','link']
 }
 
 #HACER DESPUES EL DE MIEMBROS
@@ -27,7 +27,7 @@ def get_json(section:str,data:Tuple):
         if type(value) is not str:
             dict_json[key]=value
         else:
-            if key=='Autor' and (len(value.split(';')) == 1):
+            if key=='author' and (len(value.split(';')) == 1):
                 dict_json[key]=[value]
                 continue
             if len(value.split(';')) > 1:

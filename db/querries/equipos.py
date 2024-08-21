@@ -4,6 +4,7 @@ from db.schemas_tables.schemas_tables import equipo_table,tipo_table,ubicacion_t
 
 
 querry_get_equipments=(Select(
+        equipo_table.c.IdEquipo,
         equipo_table.c.Descripción,
         tipo_table.c.Tipo,
         equipo_table.c.Procedencia,

@@ -4,6 +4,7 @@ from db.schemas_tables.schemas_tables import papers_table,miembros_table,paper_a
 
 
 querry_get_papers=(Select(
+    papers_table.c.idPaper,
     papers_table.c.título,
     func.aggregate_strings(
         func.concat(miembros_table.c.nombre,' ',miembros_table.c.apellido)
