@@ -21,3 +21,12 @@ def scheme_user_db(user_row):
         'phone':user_row[6],
         'disabled':user_row[7]
     }
+
+def scheme_book_db(book_row):
+    return {
+        "id_book":book_row[0],
+        "id_title":book_row[1],
+        "id_location":book_row[2],
+        "id_status":book_row[3],
+        "id_persona":book_row[4]
+    }
