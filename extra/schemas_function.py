@@ -30,3 +30,15 @@ def scheme_book_db(book_row):
         "id_status":book_row[3],
         "id_persona":book_row[4]
     }
+
+def scheme_status_db(status_row):
+    return {
+        "id":status_row[0],
+        "value":status_row[1]
+    }
+
+def scheme_location_db(status_row):
+    return {
+        "id":status_row[0],
+        "value":status_row[1]
+    }

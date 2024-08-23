@@ -13,7 +13,7 @@ columns_data={
     'books':['id','title','author','location','status','borrowed_to'],
     'equipments':['id','Description','type','origin','year','location','status'],
     'papers':['id','title','members','year','link'],
-    'proyects':['id','proyect','coordinator','researches','agreement','status','year_start','year_end'],
+    'projects':['id','project','coordinator','researches','agreement','status','year_start','year_end'],
     'trabajos':['id','title','course','year','link']
 }
 

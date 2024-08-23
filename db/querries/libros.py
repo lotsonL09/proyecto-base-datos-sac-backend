@@ -44,8 +44,8 @@ querry_get_books=(Select(
         libro_table.c.IdLibro,
         titulo_table.c.Titulo,
         func.aggregate_strings(autor_table.c.Autor,';').label('autores'),
-        ubicacion_table.c.ubicacion,
-        estado_table.c.estado,
+        ubicacion_table.c.IdUbi,
+        estado_table.c.IdEstado,
         func.concat(persona_table.c.Nombre,' ',persona_table.c.Apellido).label('nombre_completo')
     )
     .join(titulo_table        ,titulo_table.c.IdTitulo       ==    libro_table.c.IdTitulo)
@@ -216,10 +216,6 @@ def update_title(id_titulo:int,new_title=str):
         session.execute(update_querry)
         session.commit()
 
-querry_get_title_author=(Select(
-
-))
-
 def get_querry_delete_title_autor(id_title:int,id_author:int):
     return delete(titulo_autor_table).where(
         titulo_autor_table.c.IdTitulo == id_title,
@@ -279,6 +275,45 @@ def update_amount(id_title,amount):
     with Session() as session:
         session.execute(update_querry)
         session.commit()
+
+
+#DELETE LIBRO
+
+def get_querry_delete_book(id_book:str):
+    return delete(libro_table).where(
+        libro_table.c.IdLibro == id_book
+    )
+
+def get_querry_delete_title_author(id_title:str):
+    return delete(titulo_autor_table).where(
+        titulo_autor_table.c.IdTitulo == id_title
+    )
+
+def get_querry_delete_title(id_title:str):
+    return delete(titulo_table).where(
+        titulo_table.c.IdTitulo == id_title
+    )
+
+def delete_book(id_book:str):
+    querry=get_querry_delete_book(id_book=id_book)
+    with Session() as session:
+        session.execute(querry)
+        session.commit()
+
+def delete_title_author(id_title:str):
+    querry=get_querry_delete_title_author(id_title=id_title)
+    with Session() as session:
+        session.execute(querry)
+        session.commit()
+
+def delete_title(id_title:str):
+    querry=get_querry_delete_title(id_title=id_title)
+    with Session() as session:
+        session.execute(querry)
+        session.commit()
+
+#DELETE TITULO
+
 
 #FUNCTIONS
 
