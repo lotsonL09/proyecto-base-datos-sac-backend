@@ -14,15 +14,13 @@ querry_get_location=select(ubicacion_table)
 
 Session=sessionmaker(engine)
 
-def get_locations_data(querry):
+def get_locations_data(querry) -> list[Location]:
     all_locations=[]
     with Session() as session:
         results=session.execute(querry).fetchall()
         for status in results:
             location_db=Location(**scheme_location_db(status))
             all_locations.append(location_db)
-    return {
-        "locations":all_locations
-    }
+    return all_locations
 
 

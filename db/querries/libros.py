@@ -232,7 +232,6 @@ def update_author(id_tittle,authors:list[Author]):
             querry=get_querry_delete_title_autor(id_title=id_tittle,id_author=id_old_author)
             session.execute(querry)
             session.commit()
-        print('Anteriores libro autores borrados')
 
         for author in authors:
             id_author=get_id_author(author=author.name)

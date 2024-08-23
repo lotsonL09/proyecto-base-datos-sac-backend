@@ -19,4 +19,6 @@ async def book_delete(id:str):
     result=get_book_ids(id)
     book_db=Book_db(**scheme_book_db(result))
     
+    print(book_db)
+
     return 'Book deleted'

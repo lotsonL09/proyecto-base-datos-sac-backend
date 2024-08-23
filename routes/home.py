@@ -56,11 +56,15 @@ async def get_trabajos():
 async def get_status():
     query=querry_get_status
     result=get_status_data(query)
-    return result
+    return {
+        "locations":result
+    }
 
 
 @home.get('/locations')
 async def get_locations():
     query=querry_get_location
     result=get_locations_data(query)
-    return result
+    return {
+        "locations":result
+    }

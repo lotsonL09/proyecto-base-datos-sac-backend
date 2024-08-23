@@ -7,7 +7,14 @@ from fastapi.encoders import jsonable_encoder
 
 from db.db_session import engine
 
+from db.querries.ubicacion import get_locations_data,querry_get_location
+
+from db.querries.estados import querry_get_status,get_status_data
+
+from db.schemas_tables.schemas_tables import ubicacion_table,estado_table
+
 Session=sessionmaker(engine)
+
 
 columns_data={
     'books':['id','title','author','location','status','borrowed_to'],
@@ -20,12 +27,26 @@ columns_data={
 #HACER DESPUES EL DE MIEMBROS
 
 def get_json(section:str,data:Tuple):
-    print(data)
     columns=columns_data[section]
     dict_json={}
     for key,value in zip(columns,data):
         if type(value) is not str:
             dict_json[key]=value
+            if key == 'location':
+                query=querry_get_location.where(ubicacion_table.c.IdUbi == value)
+                location=get_locations_data(querry=query)[0]
+                dict_json[key]={
+                    'id':location.id,
+                    "value":location.value
+                }
+
+            if key == 'status':
+                query=querry_get_status.where(estado_table.c.IdEstado == value)
+                status=get_status_data(querry=query)[0]
+                dict_json[key]={
+                    'id':status.id,
+                    "value":status.value
+                }
         else:
             if key=='author' and (len(value.split(';')) == 1):
                 dict_json[key]=[value]

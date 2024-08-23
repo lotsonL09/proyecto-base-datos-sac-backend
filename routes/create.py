@@ -16,12 +16,12 @@ async def root():
     return 'Create page'
 
 
-@create.post('/libro')
+@create.post('/book')
 async def create_book(book:Book):
     result=create_register_book(book=book)
     return result
 
-@create.post('/equipo')
+@create.post('/equipment')
 async def create_equipment(equipment:Equipment):
     print(equipment.date.strftime("%Y-%m-%d"))
     return 'Done'
@@ -31,7 +31,7 @@ async def create_paper(paper:Paper):
     print(paper.authors)
     return 'Done'
 
-@create.post('/proyecto')
+@create.post('/proyect')
 async def create_proyect(proyect:Proyect):
     print(proyect.researches)
     return 'Done'
@@ -41,7 +41,7 @@ async def create_trabajo(trabajo:Trabajo):
     print(trabajo)
     return 'Done'
 
-@create.post('/usuario')
+@create.post('/user')
 async def create_user(user:User):
     print(user)
     return 'Done'
