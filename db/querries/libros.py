@@ -196,7 +196,7 @@ def insert_book(id_title:int,id_location:int,
 def insert_persona(persona:Borrowed_to):
     querry=get_insert_querry_persona(first_name=persona.first_name,
                                     last_name=persona.last_name)
-    id=execute_insert(querry=querry)
+    id=execute_insert(querry=querry)[0]
     return id
 
 def insert_title_author(id_title:str,id_author:id):
@@ -330,8 +330,7 @@ def create_register_book(book:Book):
 
     id_status=get_id_status(status=book.status)
 
-    id_persona=get_id_persona(persona=book.borrowed_to)
-
+    id_persona=get_id_persona(persona=book.borrowed_to)[0]
     for id_author in id_authors:
         _=insert_title_author(id_title=id_title,
                                                     id_author=id_author)

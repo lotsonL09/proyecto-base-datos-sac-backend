@@ -14,11 +14,11 @@ delete=APIRouter(prefix='/delete')
 def root_delete():
     return 'delete Page'
 
-@delete.put('/book/{id}')
+@delete.delete('/book/{id}')
 async def book_delete(id:str):
     result=get_book_ids(id)
     book_db=Book_db(**scheme_book_db(result))
-    
-    print(book_db)
-
+    delete_book(id_book=book_db.id_book)
+    delete_title_author(id_title=book_db.id_title)
+    delete_title(id_title=book_db.id_title)
     return 'Book deleted'

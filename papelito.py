@@ -130,6 +130,7 @@
 
 # # wb.save("book.xlsx")
 
-value='william'
 
-print(len(value.split(';')))
+a=(1,)
+
+print(len(a))
