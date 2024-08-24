@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 #from flask import Flask
@@ -12,7 +13,6 @@ from routes.update import update
 from routes.create import create
 
 app=FastAPI()
-
 origins = ["*"]
 
 app.add_middleware(
@@ -22,7 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(login)
 app.include_router(home)
 app.include_router(create)
