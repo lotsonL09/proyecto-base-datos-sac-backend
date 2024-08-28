@@ -1,3 +1,6 @@
+from entities.proyect import Proyect
+from entities.share.shared import Person
+
 
 def scheme_user(user_row):
     return {
@@ -41,4 +44,13 @@ def scheme_location_db(status_row):
     return {
         "id":status_row[0],
         "value":status_row[1]
+    }
+
+
+def scheme_proyect_to_db(proyect:Proyect,id_coordinator:int):
+    return {
+        "name":proyect.name,
+        "id_coordinator":id_coordinator,
+        "id_status":proyect.status,
+        "period":proyect.period
     }

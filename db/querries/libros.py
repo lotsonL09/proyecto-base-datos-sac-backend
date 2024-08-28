@@ -9,10 +9,11 @@ from db.schemas_tables.schemas_tables import titulo_table,estado_table
 
 from db.db_session import engine
 
-from entities.book import Borrowed_to,Book,Author
+from entities.book import Borrowed_to,Book,Author,Book_db
 
-from extra.helper_functions import execute_insert,get_id_querry,execute_get
+from extra.helper_functions import execute_insert,get_id_query,execute_get
 
+from extra.schemas_function import scheme_book_db
 #COMPROBAR
 
 Session=sessionmaker(engine)
@@ -65,15 +66,15 @@ querry_get_books=(Select(
 
 #QUERRIES
 
-querry_get_id_author=get_id_querry(table=autor_table,param=autor_table.c.IdAutor)
+querry_get_id_author=get_id_query(table=autor_table,param=autor_table.c.IdAutor)
 
-querry_get_id_persona=get_id_querry(table=persona_table,param=persona_table.c.IdPersona)
+querry_get_id_persona=get_id_query(table=persona_table,param=persona_table.c.IdPersona)
 
-querry_get_id_status=get_id_querry(table=estado_table,param=estado_table.c.IdEstado)
+querry_get_id_status=get_id_query(table=estado_table,param=estado_table.c.IdEstado)
 
-querry_get_id_title=get_id_querry(table=titulo_table,param=titulo_table.c.IdTitulo)
+querry_get_id_title=get_id_query(table=titulo_table,param=titulo_table.c.IdTitulo)
 
-querry_get_id_location=get_id_querry(table=ubicacion_table,param=ubicacion_table.c.IdUbi)
+querry_get_id_location=get_id_query(table=ubicacion_table,param=ubicacion_table.c.IdUbi)
 
 
 #GET ID functions
@@ -85,9 +86,9 @@ def get_book_ids(id:int):
     return result
 
 def get_id_title(title:str,amount):
-    querry=querry_get_id_title.where(titulo_table.c.Titulo == title)
+    query=querry_get_id_title.where(titulo_table.c.Titulo == title)
 
-    id_title=execute_get(querry=querry)
+    id_title=execute_get(query=query)
 
     if id_title is None:
         id_title=insert_titulo(title=title,
@@ -98,9 +99,9 @@ def get_id_title(title:str,amount):
                                     detail='Este libro ya está registrado')
 
 def get_id_author(author:str):
-    querry=querry_get_id_author.where(autor_table.c.Autor == author)
+    query=querry_get_id_author.where(autor_table.c.Autor == author)
 
-    id_author=execute_get(querry=querry)
+    id_author=execute_get(query=query)
 
     if id_author is None:
         id_author=insert_author(author)
@@ -114,27 +115,12 @@ def get_id_persona(persona:Borrowed_to|None):
     querry=querry_get_id_persona.where((persona_table.c.Nombre == persona.first_name) &
                                     (persona_table.c.Apellido == persona.last_name))
     
-    id_persona=execute_get(querry=querry)
-
+    id_persona=execute_get(querry=querry)[0]
+    
     if id_persona is None:
         id_persona=insert_persona(persona=persona)
         return id_persona
-
     return id_persona
-
-def get_id_location(location):
-    querry=querry_get_id_location.where(ubicacion_table.c.ubicacion == location)
-
-    id_location=execute_get(querry=querry)[0]
-
-    return id_location
-
-def get_id_status(status) -> int:
-    querry=querry_get_id_status.where(estado_table.c.estado == status)
-
-    id_status=execute_get(querry=querry)[0]
-
-    return id_status
 
 #GET QUERRIES INSERT
 
@@ -177,32 +163,32 @@ def get_insert_querry_book(id_title:int,id_location:int,
 #INSERT REGISTER
 
 def insert_author(user:str):
-    querry=get_insert_querry_author(user)
-    id=execute_insert(querry=querry)
+    query=get_insert_querry_author(user)
+    id=execute_insert(query=query)
     return id
 
 def insert_titulo(title:str,amount:int=1):
-    querry=get_insert_querry_title(title=title,amount=amount)
-    id=execute_insert(querry=querry)
+    query=get_insert_querry_title(title=title,amount=amount)
+    id=execute_insert(query=query)
     return id
 
 def insert_book(id_title:int,id_location:int,
                 id_status:int,id_persona:int):
-    querry=get_insert_querry_book(id_title=id_title,id_location=id_location,
+    query=get_insert_querry_book(id_title=id_title,id_location=id_location,
                                 id_status=id_status,id_persona=id_persona)
-    id=execute_insert(querry=querry)
+    id=execute_insert(query=query)
     return id
 
 def insert_persona(persona:Borrowed_to):
-    querry=get_insert_querry_persona(first_name=persona.first_name,
+    query=get_insert_querry_persona(first_name=persona.first_name,
                                     last_name=persona.last_name)
-    id=execute_insert(querry=querry)[0]
+    id=execute_insert(query=query)
     return id
 
-def insert_title_author(id_title:str,id_author:id):
-    querry=get_insert_querry_title_author(id_title=id_title,
+def insert_title_author(id_title:int,id_author:int):
+    query=get_insert_querry_title_author(id_title=id_title,
                                         id_author=id_author)
-    id=execute_insert(querry=querry)
+    id=execute_insert(query=query)
     return id
 
 #UPDATE TITULO
@@ -238,8 +224,8 @@ def update_author(id_tittle,authors:list[Author]):
 
             id=insert_title_author(id_title=id_tittle,id_author=id_author)
 
-def update_location(id_book,location:str):
-    id_location=get_id_location(location=location)
+def update_location(id_book,id_location:str):
+    #id_location=get_id_location(location=location)
     update_querry=(update(libro_table)
                 .where(libro_table.c.IdLibro == id_book)
                 .values(IdUbi=id_location))
@@ -248,8 +234,8 @@ def update_location(id_book,location:str):
         session.execute(update_querry)
         session.commit()
 
-def update_status(id_book,status:str):
-    id_status=get_id_status(status=status)
+def update_status(id_book,id_status:str):
+    #id_status=get_id_status(status=status)
     update_querry=(update(libro_table)
                 .where(libro_table.c.IdLibro == id_book)
                 .values(IdEstado=id_status))
@@ -326,19 +312,36 @@ def create_register_book(book:Book):
         author_id=get_id_author(author.name)
         id_authors.append(author_id)
 
-    id_location=get_id_location(location=book.location)
-
-    id_status=get_id_status(status=book.status)
-
-    id_persona=get_id_persona(persona=book.borrowed_to)[0]
+    id_persona=get_id_persona(persona=book.borrowed_to)
     for id_author in id_authors:
         _=insert_title_author(id_title=id_title,
-                                                    id_author=id_author)
+                            id_author=id_author)
 
-    _=insert_book(id_title=id_title,id_location=id_location,
-                    id_status=id_status,id_persona=id_persona)
+    _=insert_book(id_title=id_title,id_location=book.location,
+                    id_status=book.status,id_persona=id_persona)
 
     return 'Registro realizado'
 
 def update_register_book(book:Book):
-    return
+
+    result=get_book_ids(book.id)
+    book_db=Book_db(**scheme_book_db(result))
+    print('IDS',book_db)
+
+    if book.title is not None:
+        update_title(id_titulo=book_db.id_title,new_title=book.title)
+    if len(book.author) != 0:
+        update_author(id_tittle=book_db.id_title,authors=book.author)
+    #
+    if book.location is not None:
+        update_location(id_book=book_db.id_book,id_location=book.location)
+    #
+    if book.status is not None:
+        update_status(id_book=book_db.id_book,id_status=book.status)
+    #
+    if book.borrowed_to is not None:
+        update_borrowed_to(id_book=book_db.id_book,borrowed_to=book.borrowed_to)
+    if book.amount is not None:
+        update_amount(id_title=book_db.id_title,amount=book.amount)
+    
+    return 'Libro actualizado'

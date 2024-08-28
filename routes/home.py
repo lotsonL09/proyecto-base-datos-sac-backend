@@ -9,7 +9,7 @@ from db.querries.equipos import querry_get_equipments
 from db.querries.papers import querry_get_papers
 from db.querries.proyectos import querry_get_proyectos
 from db.querries.trabajos import querry_get_trabajos
-from db.querries.estados import querry_get_status,get_status_data
+from db.querries.estados import query_get_status,get_status_data
 
 from db.querries.ubicacion import querry_get_location,get_locations_data
 
@@ -54,7 +54,7 @@ async def get_trabajos():
 
 @home.get('/status')
 async def get_status():
-    query=querry_get_status
+    query=query_get_status
     result=get_status_data(query)
     return {
         "locations":result

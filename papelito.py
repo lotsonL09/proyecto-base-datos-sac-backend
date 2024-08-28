@@ -133,4 +133,5 @@
 
 a=(1,)
 
-print(len(a))
+if type(a) is tuple:
+    print(type(a))

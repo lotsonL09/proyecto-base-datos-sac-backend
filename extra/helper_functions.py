@@ -9,7 +9,7 @@ from db.db_session import engine
 
 from db.querries.ubicacion import get_locations_data,querry_get_location
 
-from db.querries.estados import querry_get_status,get_status_data
+from db.querries.estados import query_get_status,get_status_data
 
 from db.schemas_tables.schemas_tables import ubicacion_table,estado_table
 
@@ -41,7 +41,7 @@ def get_json(section:str,data:Tuple):
                 }
 
             if key == 'status':
-                query=querry_get_status.where(estado_table.c.IdEstado == value)
+                query=query_get_status.where(estado_table.c.IdEstado == value)
                 status=get_status_data(querry=query)[0]
                 dict_json[key]={
                     'id':status.id,
@@ -67,17 +67,17 @@ def get_data(section:str,querry):
         json_all.append(register_json)
     return jsonable_encoder(json_all)
 
-def get_id_querry(table,param):
+def get_id_query(table,param):
     return select(param).select_from(table)
 
-def execute_get(querry):
+def execute_get(query):
     with Session() as session:
-        id=session.execute(querry).first()
+        id=session.execute(query).first()
         return id
 
-def execute_insert(querry):
+def execute_insert(query):
     with Session() as session:
-        register_inserted=session.execute(querry)
+        register_inserted=session.execute(query)
         session.commit()
         id=register_inserted.inserted_primary_key[0]
     return id

@@ -101,28 +101,28 @@ equipo_table=Table(
 estatus_table=Table(
     'Estatus',
     metadata_obj,
-    Column('idEstatus',primary_key=True),
+    Column('idEstatus',Integer,primary_key=True,autoincrement=True),
     Column('Estatus',String(45))
 )
 
 cursos_table=Table(
     'Cursos',
     metadata_obj,
-    Column('idCurso',primary_key=True),
+    Column('idCurso',Integer,primary_key=True,autoincrement=True),
     Column('Curso',String(45))
 )
 
 convenios_table=Table(
     'Convenios',
     metadata_obj,
-    Column('idConv',primary_key=True),
+    Column('idConv',Integer,primary_key=True,autoincrement=True),
     Column('Convenio',String(45))
 )
 
 papers_table=Table(
     'Papers',
     metadata_obj,
-    Column('idPaper',primary_key=True,autoincrement=True),
+    Column('idPaper',Integer,primary_key=True,autoincrement=True),
     Column('título',String(200)),
     Column('año',Integer,CheckConstraint('año >= 1000 AND año <= 9999')),
     Column('link',String(100))
@@ -131,14 +131,14 @@ papers_table=Table(
 cargos_table=Table(
     'cargos',
     metadata_obj,
-    Column('idCargo',primary_key=True),
+    Column('idCargo',Integer,primary_key=True,autoincrement=True),
     Column('cargo',String(40))
 )
 
 miembros_table=Table(
     'Miembros',
     metadata_obj,
-    Column('idMiembro',primary_key=True,autoincrement=True),
+    Column('idMiembro',Integer,primary_key=True,autoincrement=True),
     Column('nombre',String(45)),
     Column('apellido',String(45)),
     Column('idCargo',Integer,ForeignKey('cargos.idCargo'))
@@ -157,7 +157,7 @@ trabajos_table=Table(
 proyectos_table=Table(
     'Proyectos',
     metadata_obj,
-    Column('idProyec',primary_key=True,autoincrement=True),
+    Column('idProyec',Integer,primary_key=True,autoincrement=True),
     Column('Proyecto',String(300)),
     Column('Estatus_idEst',Integer,ForeignKey('estatus.idEstatus')),
     Column('Director_idDir',Integer,ForeignKey('miembros.idMiembro')),

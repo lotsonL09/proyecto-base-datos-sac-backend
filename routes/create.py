@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException,status
+from fastapi import APIRouter
 
 from entities.book import Book
 from entities.equipment import Equipment
@@ -8,6 +8,8 @@ from entities.trabajo import Trabajo
 from entities.user import User
 
 from db.querries.libros import create_register_book
+from db.querries.papers import create_register_paper
+from db.querries.proyectos import create_register_proyect
 
 create=APIRouter(prefix='/create')
 
@@ -28,13 +30,13 @@ async def create_equipment(equipment:Equipment):
 
 @create.post('/paper')
 async def create_paper(paper:Paper):
-    print(paper.authors)
-    return 'Done'
+    result=create_register_paper(paper=paper)
+    return result
 
 @create.post('/proyect')
 async def create_proyect(proyect:Proyect):
-    print(proyect.researches)
-    return 'Done'
+    result=create_register_proyect(proyect=proyect)
+    return result
 
 @create.post('/trabajo')
 async def create_trabajo(trabajo:Trabajo):

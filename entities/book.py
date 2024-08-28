@@ -1,18 +1,16 @@
 from pydantic import BaseModel,PositiveInt
-
-class Author(BaseModel):
-    name:str
+from entities.share.shared import Author
 
 class Borrowed_to(BaseModel):
     first_name:str
     last_name:str
 
 class Book(BaseModel):
-    id:int|None=None
+    id:PositiveInt|None=None
     title:str | None = None
     author:list[Author] | None = None
-    location:str | None = None
-    status:str | None = None
+    location:PositiveInt | None = None
+    status:PositiveInt | None = None
     borrowed_to:Borrowed_to | None = None
     amount:PositiveInt | None = None
 
