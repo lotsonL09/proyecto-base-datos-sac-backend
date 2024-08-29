@@ -147,7 +147,7 @@ miembros_table=Table(
 trabajos_table=Table(
     'Trabajos',
     metadata_obj,
-    Column('idTrab',primary_key=True,autoincrement=True),
+    Column('idTrab',Integer,primary_key=True,autoincrement=True),
     Column('Título',String(500)),
     Column('idCurso',Integer,ForeignKey('cursos.idCurso')),
     Column('Año',String(100)),

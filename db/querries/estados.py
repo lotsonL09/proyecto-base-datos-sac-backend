@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from db.schemas_tables.schemas_tables import estado_table
+from db.schemas_tables.schemas_tables import estado_table,estatus_table
 
 from sqlalchemy.orm import sessionmaker
 
@@ -10,7 +10,8 @@ from extra.schemas_function import scheme_status_db
 
 from entities.status import Status
 
-query_get_status=select(estado_table)
+query_get_status_book_equipment=select(estado_table)
+query_get_status_proyect=select(estatus_table)
 
 Session=sessionmaker(engine)
 

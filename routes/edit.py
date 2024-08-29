@@ -12,7 +12,7 @@ from entities.book import Book
 
 from entities.book import Book_db
 from db.querries.libros import update_register_book
-from db.querries.papers import update_register_book
+from db.querries.papers import update_register_paper
 
 edit=APIRouter(prefix='/edit')
 
@@ -27,5 +27,5 @@ async def book_edit(book:Book):
 
 @edit.put('/paper/')
 async def book_edit(paper:Paper):
-    result=update_register_book(paper=paper)
+    result=update_register_paper(paper=paper)
     return result

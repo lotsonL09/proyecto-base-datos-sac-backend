@@ -116,7 +116,14 @@ def create_register_paper(paper:Paper):
     return 'Registro realizado'
 
 
-def update_register_book(paper:Paper):
+def update_register_paper(paper:Paper):
+
+    #get_id_title()
+
+    #miembros
+
+    #id_paper - id_miembro
+
     print(paper.id)
     print(paper.title)
     print(paper.link)

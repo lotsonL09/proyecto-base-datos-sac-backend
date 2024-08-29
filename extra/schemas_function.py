@@ -46,6 +46,12 @@ def scheme_location_db(status_row):
         "value":status_row[1]
     }
 
+def scheme_course_db(course_row):
+    return {
+        "id":course_row[0],
+        "value":course_row[1]
+    }
+
 
 def scheme_proyect_to_db(proyect:Proyect,id_coordinator:int):
     return {

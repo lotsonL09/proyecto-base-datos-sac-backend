@@ -9,9 +9,10 @@ from db.querries.equipos import querry_get_equipments
 from db.querries.papers import querry_get_papers
 from db.querries.proyectos import querry_get_proyectos
 from db.querries.trabajos import querry_get_trabajos
-from db.querries.estados import query_get_status,get_status_data
+from db.querries.estados import query_get_status_book_equipment,get_status_data,query_get_status_proyect
 
 from db.querries.ubicacion import querry_get_location,get_locations_data
+from db.querries.cursos import get_courses_data,query_get_courses
 
 from extra.helper_functions import get_data
 
@@ -52,19 +53,44 @@ async def get_trabajos():
     json_data=get_data(section='trabajos',querry=query)
     return json_data
 
-@home.get('/status')
+@home.get('/status/book')
 async def get_status():
-    query=query_get_status
+    query=query_get_status_book_equipment
     result=get_status_data(query)
     return {
-        "locations":result
+        "status":result
     }
+
+@home.get('/status/equipment')
+async def get_status():
+    query=query_get_status_book_equipment
+    result=get_status_data(query)
+    return {
+        "status":result
+    }
+
+@home.get('/status/proyect')
+async def get_status():
+    query=query_get_status_proyect
+    result=get_status_data(query)
+    return {
+        "status":result
+    }
+
 
 
 @home.get('/locations')
 async def get_locations():
     query=querry_get_location
     result=get_locations_data(query)
+    return {
+        "locations":result
+    }
+
+@home.get('/courses')
+async def get_locations():
+    query=query_get_courses
+    result=get_courses_data(query)
     return {
         "locations":result
     }

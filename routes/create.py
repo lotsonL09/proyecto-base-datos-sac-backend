@@ -10,6 +10,7 @@ from entities.user import User
 from db.querries.libros import create_register_book
 from db.querries.papers import create_register_paper
 from db.querries.proyectos import create_register_proyect
+from db.querries.trabajos import create_register_trabajo
 
 create=APIRouter(prefix='/create')
 
@@ -40,8 +41,8 @@ async def create_proyect(proyect:Proyect):
 
 @create.post('/trabajo')
 async def create_trabajo(trabajo:Trabajo):
-    print(trabajo)
-    return 'Done'
+    result=create_register_trabajo(trabajo=trabajo)
+    return result
 
 @create.post('/user')
 async def create_user(user:User):

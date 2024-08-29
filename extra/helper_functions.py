@@ -9,7 +9,7 @@ from db.db_session import engine
 
 from db.querries.ubicacion import get_locations_data,querry_get_location
 
-from db.querries.estados import query_get_status,get_status_data
+from db.querries.estados import query_get_status_book_equipment,get_status_data
 
 from db.schemas_tables.schemas_tables import ubicacion_table,estado_table
 
@@ -41,7 +41,7 @@ def get_json(section:str,data:Tuple):
                 }
 
             if key == 'status':
-                query=query_get_status.where(estado_table.c.IdEstado == value)
+                query=query_get_status_book_equipment.where(estado_table.c.IdEstado == value)
                 status=get_status_data(querry=query)[0]
                 dict_json[key]={
                     'id':status.id,
