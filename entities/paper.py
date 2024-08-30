@@ -8,3 +8,11 @@ class Paper(BaseModel):
     link:str | None = None
     year:datetime | None = None
     members:list[Member] | None = None
+
+class Paper_update(BaseModel):
+    id: int |None = None
+    title:str | None = None
+    link:str | None = None
+    year:datetime | None = None
+    members_added:list[Member] | None = None
+    members_deleted:list[Member] | None = None

@@ -326,7 +326,7 @@ def update_register_book(book:Book):
 
     result=get_book_ids(book.id)
     book_db=Book_db(**scheme_book_db(result))
-    print('IDS',book_db)
+    #print('IDS',book_db)
 
     if book.title is not None:
         update_title(id_titulo=book_db.id_title,new_title=book.title)
@@ -345,3 +345,12 @@ def update_register_book(book:Book):
         update_amount(id_title=book_db.id_title,amount=book.amount)
     
     return 'Libro actualizado'
+
+
+def delete_register_book(id:int):
+    result=get_book_ids(id)
+    book_db=Book_db(**scheme_book_db(result))
+    delete_book(id_book=book_db.id_book)
+    delete_title_author(id_title=book_db.id_title)
+    delete_title(id_title=book_db.id_title)
+    return 'Libro eliminado'

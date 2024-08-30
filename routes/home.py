@@ -14,6 +14,8 @@ from db.querries.estados import query_get_status_book_equipment,get_status_data,
 from db.querries.ubicacion import querry_get_location,get_locations_data
 from db.querries.cursos import get_courses_data,query_get_courses
 
+from db.querries.miembros import query_get_members,get_members_data
+
 from extra.helper_functions import get_data
 
 home=APIRouter(prefix='/home')
@@ -94,3 +96,9 @@ async def get_locations():
     return {
         "locations":result
     }
+
+@home.get('/members')
+async def get_members():
+    query=query_get_members
+    result=get_members_data(query=query)
+    return result

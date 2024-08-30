@@ -4,9 +4,9 @@ from sqlalchemy import Select,func,insert,select,update,delete
 from db.schemas_tables.schemas_tables import papers_table,miembros_table,paper_autor_table
 from db.schemas_tables.schemas_tables import miembros_table
 
-from extra.helper_functions import get_id_query,execute_get,execute_insert
+from extra.helper_functions import get_id_query,execute_get,execute_insert,execute_update,execute_delete
 
-from entities.paper import Paper
+from entities.paper import Paper,Paper_update
 from entities.share.shared import Member
 
 querry_get_papers=(Select(
@@ -32,7 +32,7 @@ query_get_id_paper=get_id_query(table=papers_table,param=papers_table.c.idPaper)
 query_get_id_member=get_id_query(table=miembros_table,param=miembros_table.c.idMiembro)
 
 
-def get_insert_querry_title(title:str,year:int,link:str):
+def get_insert_query_title(title:str,year:int,link:str):
     insert_query=insert(papers_table).values(
         título=title,
         año=year,
@@ -40,7 +40,7 @@ def get_insert_querry_title(title:str,year:int,link:str):
     )
     return insert_query
 
-def get_insert_querry_member(member:Member):
+def get_insert_query_member(member:Member):
     insert_querry=insert(miembros_table).values(
         nombre=member.first_name,
         apellido=member.last_name,
@@ -56,12 +56,12 @@ def get_insert_query_paper_member(id_paper:int,id_member:int):
     return insert_querry
 
 def insert_paper(title:str,link:str,year:int):
-    query=get_insert_querry_title(title=title,link=link,year=year)
+    query=get_insert_query_title(title=title,link=link,year=year)
     id=execute_insert(query=query)
     return id
 
 def insert_member(member:Member):
-    query=get_insert_querry_member(member=member)
+    query=get_insert_query_member(member=member)
     print('querry utilizada',query)
     id=execute_insert(query=query)
     return id
@@ -91,7 +91,7 @@ def get_id_member(member:Member):
     query=query_get_id_member.where((miembros_table.c.nombre == member.first_name) & 
                                     (miembros_table.c.apellido == member.last_name))
 
-    id_member=execute_get(querry=query)
+    id_member=execute_get(query=query)
     if id_member is None:
         id_member=insert_member(member=member)
         return id_member
@@ -116,17 +116,81 @@ def create_register_paper(paper:Paper):
     return 'Registro realizado'
 
 
-def update_register_paper(paper:Paper):
 
-    #get_id_title()
-
-    #miembros
-
-    #id_paper - id_miembro
-
-    print(paper.id)
-    print(paper.title)
-    print(paper.link)
-    print(paper.members)
+def update_title(id_paper:int,title:str):
+    update_query=(update(papers_table)
+                .where(papers_table.c.idPaper == id_paper)
+                .values(título = title))
     
+    execute_update(query=update_query)
+
+def update_link(id_paper:int,link:str):
+    update_query=(update(papers_table)
+                .where(papers_table.c.idPaper == id_paper)
+                .values(link = link))
+    
+    execute_update(query=update_query)
+
+def update_year(id_paper:int,year:int):
+    update_query=(update(papers_table)
+                .where(papers_table.c.idPaper == id_paper)
+                .values(año = year))
+    
+    execute_update(query=update_query)
+
+def add_member(id_paper:int,member:Member):
+
+    id_member=get_id_member(member=member)
+
+    query_insert_paper_member=get_insert_query_paper_member(id_paper=id_paper,id_member=id_member)
+    _=execute_insert(query=query_insert_paper_member)
+
+def delete_member(id_paper:int,id_member:int):
+    delete_query=(delete(paper_autor_table).where(
+        paper_autor_table.c.paper_idP == id_paper,
+        paper_autor_table.c.idMiembro == id_member
+    ))
+    execute_delete(query=delete_query)
+
+def update_register_paper(paper:Paper_update):
+
+    if paper.title is not None:
+        update_title(id_paper=paper.id,title=paper.title)
+    if len(paper.members_added) != 0:
+        for member in paper.members_added:
+            add_member(id_paper=paper.id,member=member)
+    if len(paper.members_deleted) != 0:
+        for member in paper.members_deleted:
+            delete_member(id_paper=paper.id,id_member=member.id)
+    if paper.link is not None:
+        update_link(id_paper=paper.id,link=paper.link)
+    if paper.year is not None:
+        update_year(id_paper=paper.id,year=paper.year.year)
+
     return 'Paper actualizado'
+
+
+
+def delete_id_paper_member(id_paper:int):
+
+    delete_query=(delete(paper_autor_table).where(
+        paper_autor_table.c.paper_idP == id_paper,
+    ))
+    execute_delete(query=delete_query)
+
+def delete_paper(id_paper):
+    
+    delete_query=(delete(papers_table).where(
+        papers_table.c.idPaper == id_paper,
+    ))
+    execute_delete(query=delete_query)
+
+
+def delete_register_paper(id_paper:int):
+
+    #delete id_paper - id_members
+    delete_id_paper_member(id_paper=id_paper)
+
+    delete_paper(id_paper=id_paper)
+
+    return 'Paper eliminado'

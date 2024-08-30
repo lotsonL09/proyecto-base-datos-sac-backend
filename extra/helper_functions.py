@@ -81,3 +81,13 @@ def execute_insert(query):
         session.commit()
         id=register_inserted.inserted_primary_key[0]
     return id
+
+def execute_update(query):
+    with Session() as session:
+        session.execute(query)
+        session.commit()
+
+def execute_delete(query):
+    with Session() as session:
+        session.execute(query)
+        session.commit()

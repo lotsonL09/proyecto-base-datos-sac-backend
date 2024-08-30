@@ -2,9 +2,8 @@
 
 from fastapi import APIRouter
 
-from entities.book import Book_db
-
-from db.querries.libros import delete_book,delete_title,delete_title_author,Book,get_book_ids
+from db.querries.libros import delete_register_book
+from db.querries.papers import delete_register_paper
 
 from extra.schemas_function import scheme_book_db
 
@@ -16,9 +15,11 @@ def root_delete():
 
 @delete.delete('/book/{id}')
 async def book_delete(id:str):
-    result=get_book_ids(id)
-    book_db=Book_db(**scheme_book_db(result))
-    delete_book(id_book=book_db.id_book)
-    delete_title_author(id_title=book_db.id_title)
-    delete_title(id_title=book_db.id_title)
-    return 'Book deleted'
+    result=delete_register_book(id=id)
+    return result
+
+
+@delete.delete('/paper/{id}')
+async def book_delete(id:str):
+    result=delete_register_paper(id_paper=id)
+    return result

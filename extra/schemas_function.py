@@ -40,6 +40,13 @@ def scheme_status_db(status_row):
         "value":status_row[1]
     }
 
+def scheme_member_db(member_row):
+    return {
+        "id":member_row[0],
+        "first_name":member_row[1],
+        "last_name":member_row[2]
+    }
+
 def scheme_location_db(status_row):
     return {
         "id":status_row[0],

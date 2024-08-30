@@ -8,5 +8,6 @@ class Author(BaseModel):
     name:str
 
 class Member(BaseModel):
-    first_name:str
-    last_name:str
+    id:int | None = None
+    first_name:str 
+    last_name:str 
