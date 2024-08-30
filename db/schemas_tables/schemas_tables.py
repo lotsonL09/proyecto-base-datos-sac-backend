@@ -168,22 +168,22 @@ proyectos_table=Table(
 proyec_conv_table=Table(
     'Proyec_Conv',
     metadata_obj,
-    Column('Proyec_idP',ForeignKey('proyectos.idProyec'),primary_key=True),
-    Column('Conv_idC',ForeignKey('convenios.idConv'),primary_key=True),
+    Column('Proyec_idP',Integer,ForeignKey('proyectos.idProyec'),primary_key=True),
+    Column('Conv_idC',Integer,ForeignKey('convenios.idConv'),primary_key=True),
 )
 
 proyec_invest_table=Table(
     'Proyec_Invest',
     metadata_obj,
-    Column('Proyec_idP',ForeignKey('proyectos.idProyec'),primary_key=True),
-    Column('idMiembro',ForeignKey('miembros.idMiembro'),primary_key=True),
+    Column('Proyec_idP',Integer,ForeignKey('proyectos.idProyec'),primary_key=True),
+    Column('idMiembro',Integer,ForeignKey('miembros.idMiembro'),primary_key=True),
 )
 
 paper_autor_table=Table(
     'Paper_Autor',
     metadata_obj,
-    Column('paper_idP',ForeignKey('proyectos.idProyec'),primary_key=True),
-    Column('idMiembro',ForeignKey('miembros.idMiembro'),primary_key=True),
+    Column('paper_idP',Integer,ForeignKey('proyectos.idProyec'),primary_key=True),
+    Column('idMiembro',Integer,ForeignKey('miembros.idMiembro'),primary_key=True),
 )
 
 usuario_table=Table(

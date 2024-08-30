@@ -49,11 +49,11 @@ def get_insert_query_member(member:Member):
     return insert_querry
 
 def get_insert_query_paper_member(id_paper:int,id_member:int):
-    insert_querry=insert(paper_autor_table).values(
+    insert_query=insert(paper_autor_table).values(
         paper_idP=id_paper,
         idMiembro=id_member
     )
-    return insert_querry
+    return insert_query
 
 def insert_paper(title:str,link:str,year:int):
     query=get_insert_query_title(title=title,link=link,year=year)

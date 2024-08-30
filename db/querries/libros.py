@@ -346,7 +346,6 @@ def update_register_book(book:Book):
     
     return 'Libro actualizado'
 
-
 def delete_register_book(id:int):
     result=get_book_ids(id)
     book_db=Book_db(**scheme_book_db(result))
