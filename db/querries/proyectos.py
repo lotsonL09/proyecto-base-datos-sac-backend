@@ -327,6 +327,9 @@ def update_register_proyect(proyect:Proyect_update):
         update_period(id_proyect=proyect.id,period=proyect.period)
     return 'Proyecto actualizado'
 
+
+
+
 def delete_id_proyect_researcher(id_proyect:int):
     delete_query=(delete(proyec_invest_table).where(
         proyec_invest_table.c.Proyec_idP == id_proyect,

@@ -1,12 +1,12 @@
 from fastapi import status,HTTPException
 
-from sqlalchemy import Select,desc,insert
+from sqlalchemy import Select,desc,insert,update,delete
 
 from db.schemas_tables.schemas_tables import trabajos_table,cursos_table
 
 from entities.trabajo import Trabajo
 
-from extra.helper_functions import get_id_query,execute_get,execute_insert
+from extra.helper_functions import get_id_query,execute_get,execute_insert,execute_update,execute_delete
 
 querry_get_trabajos=(Select(
     trabajos_table.c.idCurso,
@@ -57,3 +57,51 @@ def create_register_trabajo(trabajo:Trabajo):
 
     return 'Registro realizado'
 
+def update_title(id_trabajo:int,title:str):
+    update_query=(update(trabajos_table)
+                .where(trabajos_table.c.idTrab == id_trabajo)
+                .values(Título = title))
+    
+    execute_update(query=update_query)
+
+def update_course(id_trabajo:int,id_course:int):
+    update_query=(update(trabajos_table)
+                .where(trabajos_table.c.idTrab == id_trabajo)
+                .values(idCurso = id_course))
+    
+    execute_update(query=update_query)
+
+def update_year(id_trabajo:int,year:str):
+    update_query=(update(trabajos_table)
+                .where(trabajos_table.c.idTrab == id_trabajo)
+                .values(Año = year))
+    
+    execute_update(query=update_query)
+
+def update_link(id_trabajo:int,link:str):
+    update_query=(update(trabajos_table)
+                .where(trabajos_table.c.idTrab == id_trabajo)
+                .values(Link = link))
+    
+    execute_update(query=update_query)
+
+def update_register_trabajo(trabajo:Trabajo):
+    if trabajo.title is not None:
+        update_title(id_trabajo=trabajo.id,title=trabajo.title)
+    if trabajo.course is not None:
+        update_course(id_trabajo=trabajo.id,id_course=trabajo.course)
+    if trabajo.year is not None:
+        update_year(id_trabajo=trabajo.id,year=trabajo.year)
+    if trabajo.link is not None:
+        update_link(id_trabajo=trabajo.id,link=trabajo.link)
+    return 'Trabajo actualizado'
+
+def delete_trabajo(id_trabajo:int):
+    delete_query=(delete(trabajos_table).where(
+        trabajos_table.c.idTrab == id_trabajo,
+    ))
+    execute_delete(query=delete_query)
+
+def delete_register_trabajo(id_trabajo:int):
+    delete_trabajo(id_trabajo=id_trabajo)
+    return 'Trabajo eliminado'

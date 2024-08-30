@@ -12,6 +12,7 @@ from entities.user import User
 from db.querries.libros import update_register_book
 from db.querries.papers import update_register_paper
 from db.querries.proyectos import update_register_proyect
+from db.querries.trabajos import update_register_trabajo
 
 update=APIRouter(prefix='/update')
 
@@ -42,8 +43,8 @@ async def edit_proyect(proyect:Proyect_update):
 
 @update.put('/trabajo')
 async def edit_trabajo(trabajo:Trabajo):
-    print(trabajo)
-    return 'Done'
+    result=update_register_trabajo(trabajo=trabajo)
+    return result
 
 @update.put('/user')
 async def edit_user(user:User):
