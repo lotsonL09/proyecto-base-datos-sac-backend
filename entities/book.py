@@ -8,7 +8,17 @@ class Borrowed_to(BaseModel):
 class Book(BaseModel):
     id:PositiveInt|None=None
     title:str | None = None
-    author:list[Author] | None = None
+    authors:list[Author] | None = None
+    location:PositiveInt | None = None
+    status:PositiveInt | None = None
+    borrowed_to:Borrowed_to | None = None
+    amount:PositiveInt | None = None
+
+class Book_update(BaseModel):
+    id:PositiveInt|None=None
+    title:str | None = None
+    authors_added:list[Author] | None = None
+    authors_deleted:list[Author] | None = None
     location:PositiveInt | None = None
     status:PositiveInt | None = None
     borrowed_to:Borrowed_to | None = None

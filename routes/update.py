@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from entities.book import Book
+from entities.book import Book_update
 from entities.equipment import Equipment
 from entities.paper import Paper_update
 from entities.proyect import Proyect_update
@@ -22,7 +22,7 @@ def root_update():
 
 
 @update.put('/book')
-async def edit_book(book:Book):
+async def edit_book(book:Book_update):
     result=update_register_book(book=book)
     return result
 

@@ -1,6 +1,6 @@
 from fastapi import HTTPException,status
 
-from sqlalchemy import Select,func,insert,select,update,delete
+from sqlalchemy import Select,func,insert,select,update,delete,text
 from sqlalchemy.orm import sessionmaker
 
 from db.schemas_tables.schemas_tables import titulo_table,autor_table,ubicacion_table
@@ -9,16 +9,16 @@ from db.schemas_tables.schemas_tables import titulo_table,estado_table
 
 from db.db_session import engine
 
-from entities.book import Borrowed_to,Book,Author,Book_db
+from entities.book import Borrowed_to,Book,Author,Book_db,Book_update
 
-from extra.helper_functions import execute_insert,get_id_query,execute_get
+from extra.helper_functions import execute_insert,execute_get,execute_delete,execute_update,get_id,get_update_query,get_delete_query
 
 from extra.schemas_function import scheme_book_db
 #COMPROBAR
 
 Session=sessionmaker(engine)
 
-querry_get_book_mysql="""
+"""
 SELECT
         libro.IdLibro,
         titulo.Titulo,
@@ -66,42 +66,29 @@ querry_get_books=(Select(
 
 #QUERRIES
 
-querry_get_id_author=get_id_query(table=autor_table,param=autor_table.c.IdAutor)
-
-querry_get_id_persona=get_id_query(table=persona_table,param=persona_table.c.IdPersona)
-
-querry_get_id_status=get_id_query(table=estado_table,param=estado_table.c.IdEstado)
-
-querry_get_id_title=get_id_query(table=titulo_table,param=titulo_table.c.IdTitulo)
-
-querry_get_id_location=get_id_query(table=ubicacion_table,param=ubicacion_table.c.IdUbi)
-
-
 #GET ID functions
 
 def get_book_ids(id:int):
-    with Session() as session:
-        result = session.execute(libro_table.select()
-                                .where(libro_table.c.IdLibro == id)).first()
-    return result
+    filters={'IdLibro':id}
+    return get_id(table=libro_table,filters=filters)
 
 def get_id_title(title:str,amount):
-    query=querry_get_id_title.where(titulo_table.c.Titulo == title)
-
-    id_title=execute_get(query=query)
+    filters={'Titulo':title}
+    id_title=get_id(table=titulo_table,param='IdTitulo',filters=filters)
 
     if id_title is None:
         id_title=insert_titulo(title=title,
-                                amount=amount)
+                            amount=amount)
         return id_title
     else:
         raise HTTPException(status_code=status.HTTP_302_FOUND,
                                     detail='Este libro ya está registrado')
 
 def get_id_author(author:str):
-    query=querry_get_id_author.where(autor_table.c.Autor == author)
 
-    id_author=execute_get(query=query)
+    filters={'Autor':author}
+
+    id_author=get_id(table=autor_table,param='IdAutor',filters=filters)
 
     if id_author is None:
         id_author=insert_author(author)
@@ -110,195 +97,106 @@ def get_id_author(author:str):
         return id_author[0]
 
 def get_id_persona(persona:Borrowed_to|None):
-    if persona is None: #TODO: PREGUNTAR A ALVARO SOBRE ESTO
+    if persona is None: 
         return 1
-    querry=querry_get_id_persona.where((persona_table.c.Nombre == persona.first_name) &
-                                    (persona_table.c.Apellido == persona.last_name))
-    
-    id_persona=execute_get(querry=querry)[0]
-    
+    filters={'Nombre':persona.first_name,
+            'Apellido':persona.last_name}
+    id_persona=get_id(table=persona_table,param='IdPersona',filters=filters)
+
     if id_persona is None:
         id_persona=insert_persona(persona=persona)
         return id_persona
-    return id_persona
+    return id_persona[0]
 
 #GET QUERRIES INSERT
 
-def get_insert_querry_persona(first_name:str,last_name:str):
-    insert_querry=insert(persona_table).values(
-        Nombre=first_name,
-        Apellido=last_name)
-    return insert_querry
-
-def get_insert_querry_title_author(id_title:int,id_author:int):
-    insert_querry=insert(titulo_autor_table).values(
-        IdTitulo=id_title,
-        IdAutor=id_author
-    )
-    return insert_querry
-
-def get_insert_querry_title(title:str,amount):
-    insert_query=insert(titulo_table).values(
-        Titulo=title,
-        Cantidad=amount
-    )
-    return insert_query
-
-def get_insert_querry_author(user:str):
-    insert_querry=insert(autor_table).values(
-        Autor=user
-    )
-    return insert_querry
-
-def get_insert_querry_book(id_title:int,id_location:int,
-                        id_status:int,id_persona:int):
-    insert_querry=insert(libro_table).values(
-        IdTitulo=id_title,
-        IdUbi=id_location,
-        IdPersona=id_persona,
-        IdEstado=id_status
-    )
-    return insert_querry
+def get_insert_query(table,params:dict):
+    query=insert(table).values(**params)
+    return query
 
 #INSERT REGISTER
 
 def insert_author(user:str):
-    query=get_insert_querry_author(user)
+    params={'Autor':user}
+    query=get_insert_query(table=autor_table,params=params)
     id=execute_insert(query=query)
     return id
 
 def insert_titulo(title:str,amount:int=1):
-    query=get_insert_querry_title(title=title,amount=amount)
+    params={'Titulo':title,'Cantidad':amount}
+    query=get_insert_query(table=titulo_table,params=params)
     id=execute_insert(query=query)
     return id
 
 def insert_book(id_title:int,id_location:int,
                 id_status:int,id_persona:int):
-    query=get_insert_querry_book(id_title=id_title,id_location=id_location,
-                                id_status=id_status,id_persona=id_persona)
+    params={
+        'IdTitulo':id_title,
+        'IdUbi':id_location,
+        'IdPersona':id_persona,
+        'IdEstado':id_status
+    }
+    query=get_insert_query(table=libro_table,params=params)
     id=execute_insert(query=query)
     return id
 
 def insert_persona(persona:Borrowed_to):
-    query=get_insert_querry_persona(first_name=persona.first_name,
-                                    last_name=persona.last_name)
+    params={'Nombre':persona.first_name,'Apellido':persona.last_name}
+    query=get_insert_query(table=persona_table,params=params)
     id=execute_insert(query=query)
     return id
 
 def insert_title_author(id_title:int,id_author:int):
-    query=get_insert_querry_title_author(id_title=id_title,
-                                        id_author=id_author)
+    params={'IdTitulo':id_title,'IdAutor':id_author}
+    query=get_insert_query(table=titulo_autor_table,params=params)
     id=execute_insert(query=query)
     return id
 
 #UPDATE TITULO
 
 def update_title(id_titulo:int,new_title=str):
-    update_querry=(update(titulo_table)
-                .where(titulo_table.c.IdTitulo == id_titulo)
-                .values(Titulo=new_title))
+    query=get_update_query(table=titulo_table,filters={'IdTitulo':id_titulo},params={'Titulo':new_title})
+    execute_update(query=query)
 
-    with Session() as session:
-        session.execute(update_querry)
-        session.commit()
+def add_author(id_title,author:Author):
+    id_author=get_id_author(author=author.name)
+    query=get_insert_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':id_author})
+    _=execute_insert(query=query)
 
-def get_querry_delete_title_autor(id_title:int,id_author:int):
-    return delete(titulo_autor_table).where(
-        titulo_autor_table.c.IdTitulo == id_title,
-        titulo_autor_table.c.IdAutor == id_author
-    )
-
-def update_author(id_tittle,authors:list[Author]):
-    
-    with Session() as session:
-        results=session.execute(titulo_autor_table.select().where(titulo_autor_table.c.IdTitulo == id_tittle)).fetchall()
-
-        for register in results:
-            id_old_author=register[1]
-            querry=get_querry_delete_title_autor(id_title=id_tittle,id_author=id_old_author)
-            session.execute(querry)
-            session.commit()
-
-        for author in authors:
-            id_author=get_id_author(author=author.name)
-
-            id=insert_title_author(id_title=id_tittle,id_author=id_author)
+def delete_author(id_title,author:Author):
+    query=get_delete_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':author.id})
+    _=execute_delete(query=query)
 
 def update_location(id_book,id_location:str):
-    #id_location=get_id_location(location=location)
-    update_querry=(update(libro_table)
-                .where(libro_table.c.IdLibro == id_book)
-                .values(IdUbi=id_location))
-    
-    with Session() as session:
-        session.execute(update_querry)
-        session.commit()
+    query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdUbi':id_location})
+    execute_update(query=query)
 
 def update_status(id_book,id_status:str):
-    #id_status=get_id_status(status=status)
-    update_querry=(update(libro_table)
-                .where(libro_table.c.IdLibro == id_book)
-                .values(IdEstado=id_status))
-    
-    with Session() as session:
-        session.execute(update_querry)
-        session.commit()
+    query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdEstado':id_status})
+    execute_update(query=query)
 
 def update_borrowed_to(id_book,borrowed_to:Borrowed_to):
     id_persona=get_id_persona(persona=borrowed_to)
-    update_querry=(update(libro_table)
-                .where(libro_table.c.IdLibro == id_book)
-                .values(IdPersona=id_persona))
-    with Session() as session:
-        session.execute(update_querry)
-        session.commit()
+    query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdPersona':id_persona})
+    execute_update(query=query)
 
 def update_amount(id_title,amount):
-    update_querry=(update(titulo_table)
-                .where(titulo_table.c.IdTitulo == id_title)
-                .values(Cantidad=amount))
-    with Session() as session:
-        session.execute(update_querry)
-        session.commit()
+    query=get_query_update(table=titulo_table,filters={'IdTitulo':id_title},params={'Cantidad':amount})
+    execute_update(query=query)
 
+def delete_book(id_book:int):
+    query=get_delete_query(table=libro_table,params={'IdLibro':id_book})
+    execute_delete(query=query)
 
-#DELETE LIBRO
+def delete_title_author(id_title:int):
+    query=get_delete_query(table=titulo_autor_table,params={'IdTitulo':id_title})
+    execute_delete(query=query)
 
-def get_querry_delete_book(id_book:str):
-    return delete(libro_table).where(
-        libro_table.c.IdLibro == id_book
-    )
-
-def get_querry_delete_title_author(id_title:str):
-    return delete(titulo_autor_table).where(
-        titulo_autor_table.c.IdTitulo == id_title
-    )
-
-def get_querry_delete_title(id_title:str):
-    return delete(titulo_table).where(
-        titulo_table.c.IdTitulo == id_title
-    )
-
-def delete_book(id_book:str):
-    querry=get_querry_delete_book(id_book=id_book)
-    with Session() as session:
-        session.execute(querry)
-        session.commit()
-
-def delete_title_author(id_title:str):
-    querry=get_querry_delete_title_author(id_title=id_title)
-    with Session() as session:
-        session.execute(querry)
-        session.commit()
-
-def delete_title(id_title:str):
-    querry=get_querry_delete_title(id_title=id_title)
-    with Session() as session:
-        session.execute(querry)
-        session.commit()
+def delete_title(id_title:int):
+    query=get_delete_query(table=titulo_table,params={'IdTitulo':id_title})
+    execute_delete(query=query)
 
 #DELETE TITULO
-
 
 #FUNCTIONS
 
@@ -322,7 +220,7 @@ def create_register_book(book:Book):
 
     return 'Registro realizado'
 
-def update_register_book(book:Book):
+def update_register_book(book:Book_update):
 
     result=get_book_ids(book.id)
     book_db=Book_db(**scheme_book_db(result))
@@ -330,8 +228,12 @@ def update_register_book(book:Book):
 
     if book.title is not None:
         update_title(id_titulo=book_db.id_title,new_title=book.title)
-    if len(book.author) != 0:
-        update_author(id_tittle=book_db.id_title,authors=book.author)
+    if len(book.authors_added) != 0:
+        for author in book.authors_added:
+            add_author(id_title=book_db.id_title,author=author)
+    if len(book.authors_deleted) != 0:
+        for author in book.authors_deleted:
+            delete_author(id_title=book_db.id_title,author=author)
     #
     if book.location is not None:
         update_location(id_book=book_db.id_book,id_location=book.location)

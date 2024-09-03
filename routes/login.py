@@ -3,10 +3,17 @@ from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 
 from passlib.context import CryptContext
 
-
 from entities.user import User_DB,User
 
 from db.querries.users import get_user,get_user_db,insert_user
+
+import jwt
+
+from jwt.exceptions import InvalidTokenError
+
+from datetime import datetime,timedelta,timezone
+
+from extra.helper_functions import create_access_token,create_refresh_access_token
 
 login=APIRouter(prefix='/login',
                 tags=['Login site'],
@@ -14,10 +21,23 @@ login=APIRouter(prefix='/login',
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl='login')
 
+
+
+#Algoritmo de encriptacion
+"""
+Para la encriptacion con jwt
+"""
+ALGORITHM='HS256'
+ACCESS_TOKEN_DURATION=10 #min
+SECRET_KEY='41afb88eaadf2d1b57ac6cb3cedc5f24b15f5855ffbec6eb33ae355581e23003' #openssl rand -hex 32
+
+
+"""
+Contexto de encriptacion: el schema define el algoritmo de hash que se va a usar.
+"""
+
 pwd_context=CryptContext(schemes=['bcrypt'])
 
-# secret='59c38e4849250ebca7e984ca1b2c1dfdf02f35257a4f6eff35c23728f79cc4da'
-# algorithm='HS256'
 
 @login.post('/')
 async def login_root(form:OAuth2PasswordRequestForm=Depends()):
@@ -34,16 +54,16 @@ async def login_root(form:OAuth2PasswordRequestForm=Depends()):
             status_code=status.HTTP_400_BAD_REQUEST,detail='The password is wrong'
         )
     
+    access_token=create_access_token(subject=user.user_name)
+
     return {
-        "access_token":user.user_name,
+        "access_token":access_token,
         "token_type":"bearer"
     }
 
 
 @login.post('/register')
 async def register_user(user:User_DB)->User:
-
-    #funcion for search user
 
     if type(get_user(user.user_name)) == User:
         raise HTTPException(status_code=status.HTTP_201_CREATED,
@@ -56,27 +76,30 @@ async def register_user(user:User_DB)->User:
 
     return user_data
 
-async def get_current_user(token:str=Depends(oauth2_scheme)):
-    user_name=token
-    user=get_user(user_name=user_name)
 
-    if not type(user) == User:
-        raise HTTPException(
+async def auth_user(token:str=Depends(oauth2_scheme)) -> User | str:
+    exception=HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Invalid credentials',
             headers={"www-Authenticate":"Bearer"}
         )
-    
+    try:
+        user_name=jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM]).get("sub")
+        if user_name is None:
+            raise exception
+        return get_user(user_name=user_name)
+    except InvalidTokenError:
+        raise exception
+
+
+async def get_current_user(user:User=Depends(auth_user)):
+    user=get_user(user_name=user.user_name)
     if user.disabled:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Inactive user',
                             headers={"www-Authenticate":"Bearer"})
-
     return user
 
 @login.get('/users/me')
-async def me(
-    current_user:User=Depends(get_current_user)
-):
-    print('0')
+async def me(current_user:User=Depends(get_current_user)):
     return current_user

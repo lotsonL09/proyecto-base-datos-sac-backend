@@ -5,7 +5,8 @@ class Person(BaseModel):
     last_name:str
 
 class Author(BaseModel):
-    name:str
+    id:int|None=None
+    name:str|None=None
 
 class Member(BaseModel):
     id:int | None = None

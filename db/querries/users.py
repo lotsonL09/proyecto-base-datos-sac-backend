@@ -45,10 +45,10 @@ def get_user(user_name:str):
         user_row=session.execute(querry).first()
         
         if not user_row == None:
+            print('user row',user_row)
             user_scheme=scheme_user(user_row=user_row)
-
             user_found=User(**user_scheme)
-
+            
             return user_found
         else:
             return 'User not found'
@@ -85,7 +85,7 @@ def insert_user(user:User_DB):
         session.execute(querry)
         session.commit()
 
-    inserted_user=get_user(user.user_name)
+    inserted_user=get_user_db(user.user_name)
 
     return inserted_user
 

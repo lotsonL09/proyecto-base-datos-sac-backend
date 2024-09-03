@@ -4,7 +4,7 @@ from sqlalchemy import Select,func,distinct,insert,update,delete
 from db.schemas_tables.schemas_tables import proyec_invest_table,proyectos_table,convenios_table,miembros_table,proyec_conv_table
 from db.schemas_tables.schemas_tables import estatus_table
 
-from extra.helper_functions import get_id_query,execute_get,execute_insert,execute_update,execute_delete
+from extra.helper_functions import execute_get,execute_insert,execute_update,execute_delete,get_id,get_insert_query,get_update_query,get_delete_query
 from extra.schemas_function import scheme_proyect_to_db
 
 from entities.proyect import Proyect,Proyect_db,Agreement,Proyect_update,Period
@@ -49,59 +49,34 @@ querry_get_proyectos=(Select(
 )
 )
 
-query_get_id_proyect=get_id_query(table=proyectos_table,param=proyectos_table.c.Proyecto)
-
-query_get_id_coordinator=get_id_query(table=miembros_table,param=miembros_table.c.idMiembro)
-
-query_get_id_researcher=query_get_id_coordinator
-
-query_get_id_agreement=get_id_query(table=convenios_table,param=convenios_table.c.idConv)
 
 def get_insert_query_proyect(proyect:Proyect_db):
-    insert_query=insert(proyectos_table).values(
-    Proyecto=proyect.name,
-    Estatus_idEst=proyect.id_status,
-    Director_idDir=proyect.id_coordinator,
-    Año_in=proyect.period.year_start.year,
-    Año_fin=proyect.period.year_end.year
-    )
-    return insert_query
+    query=get_insert_query(table=proyectos_table,params={'Proyecto':proyect.name,
+                                                        'Estatus_idEst':proyect.id_status,
+                                                        'Director_idDir':proyect.id_coordinator,
+                                                        'Año_in':proyect.period.year_start.year,
+                                                        'Año_fin':proyect.period.year_end.year})
+    return query
 
 def get_insert_query_coordinator(coordinator:Member):
-    insert_query=insert(miembros_table).values(
-        nombre=coordinator.first_name,
-        apellido=coordinator.last_name,
-        idCargo = 4
-    )
-    return insert_query
+    query=get_insert_query(table=miembros_table,params={'nombre':coordinator.first_name,'apellido':coordinator.last_name,'idCargo':4})
+    return query
 
 def get_insert_query_researcher(researcher:Member):
-    insert_query=insert(miembros_table).values(
-        nombre=researcher.first_name,
-        apellido=researcher.last_name,
-        idCargo = 4
-    )
-    return insert_query
+    query=get_insert_query(table=miembros_table,params={'nombre':researcher.first_name,'apellido':researcher.last_name,'idCargo':4})
+    return query
 
 def get_insert_query_proyect_researcher(id_proyect:int,id_researcher:int):
-    insert_query=insert(proyec_invest_table).values(
-        Proyec_idP=id_proyect,
-        idMiembro=id_researcher
-    )
-    return insert_query
+    query=get_insert_query(table=proyec_invest_table,params={'Proyec_idP':id_proyect,'idMiembro':id_researcher})
+    return query
 
 def get_insert_querry_proyect_agreement(id_proyect:int,id_agreement:int):
-    insert_query=insert(proyec_conv_table).values(
-        Proyec_idP=id_proyect,
-        Conv_idC=id_agreement
-    )
-    return insert_query
+    query=get_insert_query(table=proyec_conv_table,params={'Proyec_idP':id_proyect,'Conv_idC':id_agreement})
+    return query
 
 def get_insert_query_agreement(agreement:Agreement):
-    insert_query=insert(convenios_table).values(
-        Convenio=agreement.name
-    )
-    return insert_query
+    query=get_insert_query(table=convenios_table,params={'Convenio':agreement.name})
+    return query
 
 def insert_proyect(proyect:Proyect_db):
     query=get_insert_query_proyect(proyect=proyect)
@@ -134,7 +109,7 @@ def insert_proyect_agreement(id_proyect:int,id_agreement:int):
     return id
 
 def get_id_proyect(proyect:Proyect_db):
-    query=query_get_id_proyect.where(proyectos_table.c.Proyecto == proyect.name)
+    query=get_id(table=proyectos_table,filters={'Proyecto':proyect.name},param='idProyec')
 
     id_proyect=execute_get(query=query)
 
@@ -146,8 +121,7 @@ def get_id_proyect(proyect:Proyect_db):
                             detail='Este proyecto ya está registrado')
 
 def get_id_coordinator(coordinator:Member):
-    query=query_get_id_coordinator.where((miembros_table.c.nombre == coordinator.first_name) & 
-                                        (miembros_table.c.apellido  == coordinator.last_name))
+    query=get_id(table=miembros_table,filters={'nombre':coordinator.first_name,'apellido':coordinator.last_name},param='idMiembro')
     
     id_coordinator=execute_get(query)
 
@@ -158,8 +132,7 @@ def get_id_coordinator(coordinator:Member):
         return id_coordinator[0]
 
 def get_id_researcher(researcher:Member):
-    query=query_get_id_researcher.where((miembros_table.c.nombre == researcher.first_name) & 
-                                        (miembros_table.c.apellido  == researcher.last_name))
+    query=get_id(table=miembros_table,filters={'nombre':researcher.first_name,'apellido':researcher.last_name},param='idMiembro')
     
     id_researcher=execute_get(query=query)
 
@@ -170,16 +143,13 @@ def get_id_researcher(researcher:Member):
     return id_researcher[0]
 
 def get_id_agreement(agreement:Agreement):
-    query=query_get_id_agreement.where(convenios_table.c.Convenio == agreement.name)
+    query=get_id(table=convenios_table,filters={'Convenio':agreement.name},param='idConv')
 
     id_agreement=execute_get(query=query)
     
     if id_agreement is None:
         id_agreement=insert_agreement(agreement=agreement)
-        print(f'Id agreement added {id_agreement}')
         return id_agreement
-
-    print(f'Id agreement added {id_agreement}')
 
     return id_agreement[0]
 
@@ -220,32 +190,21 @@ def create_register_proyect(proyect:Proyect):
     return 'Registro realizado'
 
 def update_name(id_proyect:int,name:str):
-    update_query=(update(proyectos_table)
-                .where(proyectos_table.c.idProyec == id_proyect)
-                .values(Proyecto = name))
-    
-    execute_update(query=update_query)
+    query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={'Proyecto':name})
+    execute_update(query=query)
 
 def update_coordinator(id_proyect:int,coordinator:Member):
     id_coordinator=get_id_coordinator(coordinator=coordinator)
-    query_update=(update(proyectos_table)
-                .where(proyectos_table.c.idProyec == id_proyect)
-                .values(Director_idDir = id_coordinator))
-    execute_update(query=query_update)
+    query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={'Director_idDir':id_coordinator})
+    execute_update(query=query)
 
 def get_insert_querry_proyect_researcher(id_proyect:int,id_researcher:int):
-    insert_query=insert(proyec_invest_table).values(
-        Proyec_idP=id_proyect,
-        idMiembro=id_researcher
-    )
-    return insert_query
+    query=get_insert_query(table=proyec_invest_table,params={'Proyec_idP':id_proyect,'idMiembro':id_researcher})
+    return query
 
 def add_researcher(id_proyect:int,researcher:Member):
-
     id_researcher=get_id_researcher(researcher=researcher)
-
     query_insert_proyect_researcher=get_insert_query_proyect_researcher(id_proyect=id_proyect,id_researcher=id_researcher)
-
     _=execute_insert(query=query_insert_proyect_researcher)
 
 def delete_researcher(id_proyect:int,id_reseracher:int):
@@ -269,22 +228,15 @@ def add_agreement(id_proyect:int,agreement:Agreement):
     _=execute_insert(query=query_insert_proyect_agreement)
 
 def delete_agreement(id_proyect:int,id_agreement:int):
-    print(f"Id proyect: {id_proyect} | Id agreement: {id_agreement}")
-    delete_query=(delete(proyec_conv_table)
-                .where(proyec_conv_table.c.Proyec_idP == id_proyect,
-                    proyec_conv_table.c.Conv_idC == id_agreement))
-    execute_delete(query=delete_query)
+    query=get_delete_query(table=proyec_conv_table,params={'Proyec_idP':id_proyect,'Conv_idC':id_agreement})
+    execute_delete(query=query)
 
 def update_status(id_proyect:int,id_status:int):
-    query_update=(update(proyectos_table)
-                .where(proyectos_table.c.idProyec == id_proyect)
-                .values(Estatus_idEst = id_status))
-    execute_update(query=query_update)
+    query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={'Estatus_idEst':id_status})
+    execute_update(query=query)
 
 def update_date(id_proyect:int,param,year):
-    query=(update(proyectos_table)
-        .where(proyectos_table.c.idProyec == id_proyect)
-        .values({param:year}))
+    query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={param:year})
     execute_update(query=query)
 
 def update_period(id_proyect:int,period:Period):
@@ -326,9 +278,6 @@ def update_register_proyect(proyect:Proyect_update):
 
         update_period(id_proyect=proyect.id,period=proyect.period)
     return 'Proyecto actualizado'
-
-
-
 
 def delete_id_proyect_researcher(id_proyect:int):
     delete_query=(delete(proyec_invest_table).where(
