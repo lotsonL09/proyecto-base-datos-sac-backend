@@ -181,7 +181,7 @@ def update_borrowed_to(id_book,borrowed_to:Borrowed_to):
     execute_update(query=query)
 
 def update_amount(id_title,amount):
-    query=get_query_update(table=titulo_table,filters={'IdTitulo':id_title},params={'Cantidad':amount})
+    query=get_update_query(table=titulo_table,filters={'IdTitulo':id_title},params={'Cantidad':amount})
     execute_update(query=query)
 
 def delete_book(id_book:int):
