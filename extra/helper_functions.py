@@ -40,7 +40,7 @@ def get_json(section:str,data:Tuple):
             dict_json[key]=value
             if key == 'location':
                 query=querry_get_location.where(ubicacion_table.c.IdUbi == value)
-                location=get_locations_data(querry=query)[0]
+                location=get_locations_data(query=query)[0]
                 dict_json[key]={
                     'id':location.id,
                     "value":location.value
@@ -48,7 +48,7 @@ def get_json(section:str,data:Tuple):
 
             if key == 'status':
                 query=query_get_status_book_equipment.where(estado_table.c.IdEstado == value)
-                status=get_status_data(querry=query)[0]
+                status=get_status_data(query=query)[0]
                 dict_json[key]={
                     'id':status.id,
                     "value":status.value
