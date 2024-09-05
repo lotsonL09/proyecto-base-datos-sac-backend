@@ -197,6 +197,7 @@ usuario_table=Table(
     Column('email',String(100)),
     Column('category',String(50)),
     Column('phone',String(20)),
+    Column('refresh_token',String(250)),
     Column('disabled',Boolean)
 )
 

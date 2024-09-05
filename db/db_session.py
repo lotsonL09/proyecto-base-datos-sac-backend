@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine,URL
-from config import settings
+from config.config import settings
 
 db_config = {
     "drivername":settings.DRIVER_NAME,

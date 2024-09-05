@@ -15,7 +15,7 @@ from db.schemas_tables.schemas_tables import ubicacion_table,estado_table
 
 import jwt
 
-from config import settings
+from config.config import settings
 
 from datetime import datetime,timedelta,timezone
 
@@ -23,7 +23,7 @@ Session=sessionmaker(engine)
 
 
 columns_data={
-    'books':['id','title','author','location','status','borrowed_to'],
+    'books':['id','title','authors','location','status','borrowed_to'],
     'equipments':['id','Description','type','origin','year','location','status'],
     'papers':['id','title','members','year','link'],
     'projects':['id','project','coordinator','researches','agreement','status','year_start','year_end'],
@@ -54,11 +54,21 @@ def get_json(section:str,data:Tuple):
                     "value":status.value
                 }
         else:
-            if key=='author' and (len(value.split(';')) == 1):
-                dict_json[key]=[value]
-                continue
-            if len(value.split(';')) > 1:
-                dict_json[key]=value.split(';')[:-1]
+            if key=='authors' and (len(value.split(';')) == 1):
+                author=value
+                dict_json[key]=[]
+                dict_json[key].append({
+                        'id':author.split(',')[0][1:],
+                        'value':author.split(',')[1][:-1]
+                    })
+            elif len(value.split(';')) > 1:
+                authors=value.split(';')[:-1]
+                dict_json[key]=[]
+                for author in authors:
+                    dict_json[key].append({
+                        'id':int(author.split(',')[0][1:]),
+                        'value':author.split(',')[1][:-1]
+                    })
             else:
                 dict_json[key]=value
     return dict_json
@@ -95,11 +105,11 @@ def get_insert_query(table,params:dict):
     query=insert(table).values(**params)
     return query
 
-def get_update_query(table,filters,params):
+def get_update_query(table,filters:dict,params:dict):
     query=update(table)
-    for column_name,value in filters:
+    for column_name,value in filters.items():
         query=query.where(getattr(table.c,column_name) == value)
-    query.values(**params)
+    query=query.values(**params)
     return query
 
 def get_delete_query(table:str,params:dict):
@@ -134,7 +144,8 @@ def create_access_token(subject:str,expire_delta:int = settings.ACCESS_TOKEN_EXP
     expire=datetime.now(timezone.utc) + timedelta(minutes=expire_delta)
     payload={
         "sub":subject,
-        "exp":expire
+        "exp":expire,
+        "mode":"access_token"
     }
     token=jwt.encode(
         payload=payload,
@@ -143,11 +154,12 @@ def create_access_token(subject:str,expire_delta:int = settings.ACCESS_TOKEN_EXP
     )
     return token
 
-def create_refresh_access_token(subject:str,expire_delta:int=settings.REFRESH_TOKEN_EXPIRE_MINUTES):
+def create_refresh_token(subject:str,expire_delta:int=settings.REFRESH_TOKEN_EXPIRE_MINUTES):
     expire=datetime.now(timezone.utc) + timedelta(minutes=expire_delta)
     payload={
         "sub":subject,
-        "exp":expire
+        "exp":expire,
+        "mode":"refresh_token"
     }
     token=jwt.encode(
         payload=payload,
@@ -155,3 +167,4 @@ def create_refresh_access_token(subject:str,expire_delta:int=settings.REFRESH_TO
         algorithm=settings.ALGORITHM
     )
     return token
+

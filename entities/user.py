@@ -13,4 +13,5 @@ class User(BaseModel):
 
 class User_DB(User):
     password:str
+    refresh_token:str | None = None
 

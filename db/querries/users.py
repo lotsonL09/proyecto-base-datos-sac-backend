@@ -9,6 +9,8 @@ from extra.schemas_function import scheme_user,scheme_user_db
 
 from entities.user import User_DB,User
 
+from extra.helper_functions import get_update_query,execute_update
+
 Session=sessionmaker(engine)
 
 
@@ -26,6 +28,7 @@ querry_get_users=(Select(
 )
 
 querry_get_users_db=(Select(
+    usuario_table.c.id_usuario,
     usuario_table.c.user_name,
     usuario_table.c.password,
     usuario_table.c.first_name,
@@ -33,10 +36,17 @@ querry_get_users_db=(Select(
     usuario_table.c.email,
     usuario_table.c.category,
     usuario_table.c.phone,
+    usuario_table.c.refresh_token,
     usuario_table.c.disabled
 )
 )
 
+
+
+
+def update_refresh_token_db(id_user,refresh_token):
+    query=get_update_query(table=usuario_table,filters={'id_usuario':id_user},params={'refresh_token':refresh_token})
+    execute_update(query=query)
 
 
 def get_user(user_name:str):
@@ -74,6 +84,7 @@ def get_insert_querry_user(user:User_DB):
         email=user.email,
         category=user.category,
         phone=user.phone,
+        refresh_token=user.refresh_token,
         disabled=user.disabled
     )
     return insert_querry

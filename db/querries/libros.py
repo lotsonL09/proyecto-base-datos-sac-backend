@@ -44,7 +44,9 @@ SELECT
 querry_get_books=(Select(
         libro_table.c.IdLibro,
         titulo_table.c.Titulo,
-        func.aggregate_strings(autor_table.c.Autor,';').label('autores'),
+        func.aggregate_strings(
+            func.concat('(',autor_table.c.IdAutor,',',autor_table.c.Autor,')'),';'
+        ).label('autores'),
         ubicacion_table.c.IdUbi,
         estado_table.c.IdEstado,
         func.concat(persona_table.c.Nombre,' ',persona_table.c.Apellido).label('nombre_completo')
@@ -206,7 +208,7 @@ def create_register_book(book:Book):
                     amount=book.amount)
 
     id_authors=[]
-    for author in book.author:
+    for author in book.authors:
         author_id=get_id_author(author.name)
         id_authors.append(author_id)
 
