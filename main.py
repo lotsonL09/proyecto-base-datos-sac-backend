@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
-#from flask import Flask
+
 
 from routes.login import login
 from routes.home import home
