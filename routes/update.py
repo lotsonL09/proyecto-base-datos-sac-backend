@@ -1,6 +1,7 @@
 #from flask import Blueprint
 
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 from entities.book import Book_update
 from entities.equipment import Equipment
@@ -24,7 +25,7 @@ def root_update():
 @update.put('/book')
 async def edit_book(book:Book_update):
     result=update_register_book(book=book)
-    return result
+    return JSONResponse(result)
 
 @update.put('/equipment')
 async def edit_equipment(equipment:Equipment):

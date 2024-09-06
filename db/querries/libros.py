@@ -163,7 +163,7 @@ def update_title(id_titulo:int,new_title=str):
 def add_author(id_title,author:Author):
     id_author=get_id_author(author=author.name)
     query=get_insert_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':id_author})
-    _=execute_insert(query=query)
+    return execute_insert(query=query)
 
 def delete_author(id_title,author:Author):
     query=get_delete_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':author.id})
@@ -171,16 +171,16 @@ def delete_author(id_title,author:Author):
 
 def update_location(id_book,id_location:str):
     query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdUbi':id_location})
-    execute_update(query=query)
+    return execute_update(query=query)
 
 def update_status(id_book,id_status:str):
     query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdEstado':id_status})
-    execute_update(query=query)
+    return execute_update(query=query)
 
 def update_borrowed_to(id_book,borrowed_to:Borrowed_to):
     id_persona=get_id_persona(persona=borrowed_to)
     query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdPersona':id_persona})
-    execute_update(query=query)
+    return execute_update(query=query)
 
 def update_amount(id_title,amount):
     query=get_update_query(table=titulo_table,filters={'IdTitulo':id_title},params={'Cantidad':amount})
@@ -230,25 +230,46 @@ def update_register_book(book:Book_update):
 
     if book.title is not None:
         update_title(id_titulo=book_db.id_title,new_title=book.title)
+
+    authors_added=[]
+
     if len(book.authors_added) != 0:
         for author in book.authors_added:
-            add_author(id_title=book_db.id_title,author=author)
+            id_author_added=add_author(id_title=book_db.id_title,author=author)
+            authors_added.append({
+                "id":id_author_added,
+                "value":author.name
+            })
+
     if len(book.authors_deleted) != 0:
         for author in book.authors_deleted:
             delete_author(id_title=book_db.id_title,author=author)
     #
     if book.location is not None:
-        update_location(id_book=book_db.id_book,id_location=book.location)
+        id_update_location=update_location(id_book=book_db.id_book,id_location=book.location)
+    new_location=id_update_location
     #
     if book.status is not None:
-        update_status(id_book=book_db.id_book,id_status=book.status)
+        id_update_status=update_status(id_book=book_db.id_book,id_status=book.status)
     #
+    new_status=id_update_status
     if book.borrowed_to is not None:
-        update_borrowed_to(id_book=book_db.id_book,borrowed_to=book.borrowed_to)
+        id_update_borrowed_to=update_borrowed_to(id_book=book_db.id_book,borrowed_to=book.borrowed_to)
+    new_borrowed_to={
+        'id':id_update_status,
+        'first_name':book.borrowed_to.first_name,
+        'last_name':book.borrowed_to.last_name
+    }
     if book.amount is not None:
         update_amount(id_title=book_db.id_title,amount=book.amount)
     
-    return 'Libro actualizado'
+    return {
+        'id':book_db.id_book,
+        'authors_added':authors_added,
+        'location':new_location,
+        'status':new_status,
+        'borrowed_to':new_borrowed_to
+    }
 
 def delete_register_book(id:int):
     result=get_book_ids(id)
