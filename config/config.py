@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES:int
 
     class Config:
-        env_file=Path(Path(__file__).resolve().parent) / ".env"
+        env_file= ".env"
 
 settings=Settings()
 
