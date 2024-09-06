@@ -58,7 +58,7 @@ def get_json(section:str,data:Tuple):
                 author=value
                 dict_json[key]=[]
                 dict_json[key].append({
-                        'id':author.split(',')[0][1:],
+                        'id':int(author.split(',')[0][1:]),
                         'value':author.split(',')[1][:-1]
                     })
             elif len(value.split(';')) > 1:
