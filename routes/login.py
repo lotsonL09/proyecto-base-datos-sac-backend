@@ -18,19 +18,8 @@ async def login_root(form:OAuth2PasswordRequestForm=Depends()):
 
 @login.post('/register')
 async def register_user(user:User_DB)->User:
+    
     return register_process(user=user)
-
-async def get_current_user(user:User=Depends(auth_user)):
-    user=get_user(user_name=user.user_name)
-    if user.disabled:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail='Inactive user',
-                            headers={"www-Authenticate":"Bearer"})
-    return user
-
-@login.get('/users/me')
-async def me(current_user:User=Depends(get_current_user)):
-    return current_user
 
 @login.post('/refresh_token')
 async def get_refresh_token(info_user_token:str=Depends(refresh_token)):

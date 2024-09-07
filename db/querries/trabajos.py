@@ -106,4 +106,6 @@ def delete_trabajo(id_trabajo:int):
 
 def delete_register_trabajo(id_trabajo:int):
     delete_trabajo(id_trabajo=id_trabajo)
-    return 'Trabajo eliminado'
+    return {
+        "response":'Trabajo eliminado'
+    }

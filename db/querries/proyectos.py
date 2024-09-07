@@ -325,5 +325,7 @@ def delete_register_proyect(id_proyect:int):
     delete_id_proyect_researcher(id_proyect=id_proyect)
     delete_id_proyect_agreements(id_proyect=id_proyect)
     delete_proyect(id_proyect=id_proyect)
-    return 'Proyecto eliminado'
+    return {
+        "response":'Proyecto eliminado'
+    }
 

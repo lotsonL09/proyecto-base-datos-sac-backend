@@ -282,4 +282,6 @@ def delete_register_book(id:int):
     delete_book(id_book=book_db.id_book)
     delete_title_author(id_title=book_db.id_title)
     delete_title(id_title=book_db.id_title)
-    return 'Libro eliminado'
+    return {
+        "response":'Libro eliminado'
+    }

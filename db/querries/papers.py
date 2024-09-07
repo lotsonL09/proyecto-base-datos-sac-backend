@@ -163,4 +163,6 @@ def delete_register_paper(id_paper:int):
 
     delete_paper(id_paper=id_paper)
 
-    return 'Paper eliminado'
+    return {
+        "response":'Paper eliminado'
+    }

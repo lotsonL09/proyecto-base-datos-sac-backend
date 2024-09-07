@@ -10,6 +10,7 @@ from routes.download import download
 from routes.logout import logout
 from routes.update import update
 from routes.create import create
+from routes.users import users
 
 app=FastAPI()
 origins = ["*"]
@@ -21,6 +22,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(login)
 app.include_router(home)
 app.include_router(create)
@@ -28,7 +30,7 @@ app.include_router(update)
 app.include_router(delete)
 app.include_router(download)
 app.include_router(logout)
-
+app.include_router(users)
 
 
 if __name__ == "__main__":

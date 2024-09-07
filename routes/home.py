@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,Depends
 
 from sqlalchemy.orm import sessionmaker
 
@@ -18,45 +18,47 @@ from db.querries.miembros import query_get_members,get_members_data
 
 from extra.helper_functions import get_data
 
+from config.auth import auth_user
+
 home=APIRouter(prefix='/home')
 
 Session=sessionmaker(engine)
 
 
 @home.get('/books')
-async def get_books():
+async def get_books(user=Depends(auth_user)):
     query=querry_get_books
     json_data=get_data(section='books',querry=query)
     return json_data
 
 @home.get('/equipments')
-async def get_equipments():
+async def get_equipments(user=Depends(auth_user)):
     query=querry_get_equipments
     json_data=get_data(section='equipments',querry=query)
     return json_data
 
 @home.get('/papers')
-async def get_papers():
+async def get_papers(user=Depends(auth_user)):
     query=querry_get_papers
     json_data=get_data(section='papers',querry=query)
     return json_data
 
 
 @home.get('/projects')
-async def get_proyectos():
+async def get_proyectos(user=Depends(auth_user)):
     query=querry_get_proyectos
     json_data=get_data(section='projects',querry=query)
     return json_data
 
 
 @home.get('/trabajos')
-async def get_trabajos():
+async def get_trabajos(user=Depends(auth_user)):
     query=querry_get_trabajos
     json_data=get_data(section='trabajos',querry=query)
     return json_data
 
 @home.get('/status/book')
-async def get_status():
+async def get_status(user=Depends(auth_user)):
     query=query_get_status_book_equipment
     result=get_status_data(query)
     return {
@@ -64,7 +66,7 @@ async def get_status():
     }
 
 @home.get('/status/equipment')
-async def get_status():
+async def get_status(user=Depends(auth_user)):
     query=query_get_status_book_equipment
     result=get_status_data(query)
     return {
@@ -72,7 +74,7 @@ async def get_status():
     }
 
 @home.get('/status/project')
-async def get_status():
+async def get_status(user=Depends(auth_user)):
     query=query_get_status_proyect
     result=get_status_data(query)
     return {

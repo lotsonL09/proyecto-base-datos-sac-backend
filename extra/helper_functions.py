@@ -33,9 +33,6 @@ columns_data={
 #HACER DESPUES EL DE MIEMBROS
 
 def get_json(section:str,data:Tuple):
-
-    print(data)
-
     columns=columns_data[section]
     dict_json={}
     for key,value in zip(columns,data):
@@ -122,10 +119,9 @@ def get_delete_query(table:str,params:dict):
     return query
 
 def execute_get(query):
-    print(query)
     with Session() as session:
-        id=session.execute(query).first()
-        return id
+        result=session.execute(query).first()
+        return result
 
 def execute_insert(query):
     with Session() as session:
