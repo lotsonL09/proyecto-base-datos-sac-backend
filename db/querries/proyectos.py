@@ -109,9 +109,7 @@ def insert_proyect_agreement(id_proyect:int,id_agreement:int):
     return id
 
 def get_id_proyect(proyect:Proyect_db):
-    query=get_id(table=proyectos_table,filters={'Proyecto':proyect.name},param='idProyec')
-
-    id_proyect=execute_get(query=query)
+    id_proyect=get_id(table=proyectos_table,filters={'Proyecto':proyect.name},param='idProyec')
 
     if id_proyect is None:
         id_proyect=insert_proyect(proyect=proyect)
@@ -121,10 +119,7 @@ def get_id_proyect(proyect:Proyect_db):
                             detail='Este proyecto ya está registrado')
 
 def get_id_coordinator(coordinator:Member):
-    query=get_id(table=miembros_table,filters={'nombre':coordinator.first_name,'apellido':coordinator.last_name},param='idMiembro')
-    
-    id_coordinator=execute_get(query)
-
+    id_coordinator=get_id(table=miembros_table,filters={'nombre':coordinator.first_name,'apellido':coordinator.last_name},param='idMiembro')
     if id_coordinator is None:
         id_coordinator=insert_coordinator(coordinator=coordinator)
         return id_coordinator
@@ -132,10 +127,8 @@ def get_id_coordinator(coordinator:Member):
         return id_coordinator[0]
 
 def get_id_researcher(researcher:Member):
-    query=get_id(table=miembros_table,filters={'nombre':researcher.first_name,'apellido':researcher.last_name},param='idMiembro')
+    id_researcher=get_id(table=miembros_table,filters={'nombre':researcher.first_name,'apellido':researcher.last_name},param='idMiembro')
     
-    id_researcher=execute_get(query=query)
-
     if id_researcher is None:
         id_researcher=insert_researcher(researcher=researcher)
         return id_researcher
@@ -143,10 +136,8 @@ def get_id_researcher(researcher:Member):
     return id_researcher[0]
 
 def get_id_agreement(agreement:Agreement):
-    query=get_id(table=convenios_table,filters={'Convenio':agreement.name},param='idConv')
+    id_agreement=get_id(table=convenios_table,filters={'Convenio':agreement.name},param='idConv')
 
-    id_agreement=execute_get(query=query)
-    
     if id_agreement is None:
         id_agreement=insert_agreement(agreement=agreement)
         return id_agreement

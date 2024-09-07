@@ -71,15 +71,13 @@ async def get_status():
         "status":result
     }
 
-@home.get('/status/proyect')
+@home.get('/status/project')
 async def get_status():
     query=query_get_status_proyect
     result=get_status_data(query)
     return {
         "status":result
     }
-
-
 
 @home.get('/locations')
 async def get_locations():

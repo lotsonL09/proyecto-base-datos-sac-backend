@@ -33,6 +33,9 @@ columns_data={
 #HACER DESPUES EL DE MIEMBROS
 
 def get_json(section:str,data:Tuple):
+
+    print(data)
+
     columns=columns_data[section]
     dict_json={}
     for key,value in zip(columns,data):
@@ -61,7 +64,7 @@ def get_json(section:str,data:Tuple):
                         'id':int(author.split(',')[0][1:]),
                         'value':author.split(',')[1][:-1]
                     })
-            elif len(value.split(';')) > 1:
+            elif key=='authors' and (len(value.split(';')) > 1):
                 authors=value.split(';')[:-1]
                 dict_json[key]=[]
                 for author in authors:
@@ -119,6 +122,7 @@ def get_delete_query(table:str,params:dict):
     return query
 
 def execute_get(query):
+    print(query)
     with Session() as session:
         id=session.execute(query).first()
         return id

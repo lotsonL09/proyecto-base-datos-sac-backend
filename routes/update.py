@@ -37,7 +37,7 @@ async def edit_paper(paper:Paper_update):
     result=update_register_paper(paper=paper)
     return JSONResponse(result)
 
-@update.put('/proyect')
+@update.put('/project')
 async def edit_proyect(proyect:Proyect_update):
     result=update_register_proyect(proyect=proyect)
     return JSONResponse(result)

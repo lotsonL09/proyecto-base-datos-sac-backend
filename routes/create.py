@@ -34,7 +34,7 @@ async def create_paper(paper:Paper):
     result=create_register_paper(paper=paper)
     return result
 
-@create.post('/proyect')
+@create.post('/project')
 async def create_proyect(proyect:Proyect):
     result=create_register_proyect(proyect=proyect)
     return result
