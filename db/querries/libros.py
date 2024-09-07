@@ -1,6 +1,6 @@
 from fastapi import HTTPException,status
 
-from sqlalchemy import Select,func,insert,select,update,delete,text
+from sqlalchemy import Select,func,insert
 from sqlalchemy.orm import sessionmaker
 
 from db.schemas_tables.schemas_tables import titulo_table,autor_table,ubicacion_table
@@ -11,7 +11,7 @@ from db.db_session import engine
 
 from entities.book import Borrowed_to,Book,Author,Book_db,Book_update
 
-from extra.helper_functions import execute_insert,execute_get,execute_delete,execute_update,get_id,get_update_query,get_delete_query
+from extra.helper_functions import execute_insert,execute_delete,execute_update,get_id,get_update_query,get_delete_query
 
 from extra.schemas_function import scheme_book_db
 #COMPROBAR
@@ -171,16 +171,17 @@ def delete_author(id_title,author:Author):
 
 def update_location(id_book,id_location:str):
     query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdUbi':id_location})
-    return execute_update(query=query)
+    execute_update(query=query)
 
 def update_status(id_book,id_status:str):
     query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdEstado':id_status})
-    return execute_update(query=query)
+    execute_update(query=query)
 
 def update_borrowed_to(id_book,borrowed_to:Borrowed_to):
     id_persona=get_id_persona(persona=borrowed_to)
     query=get_update_query(table=libro_table,filters={'IdLibro':id_book},params={'IdPersona':id_persona})
-    return execute_update(query=query)
+    execute_update(query=query)
+    return id_persona
 
 def update_amount(id_title,amount):
     query=get_update_query(table=titulo_table,filters={'IdTitulo':id_title},params={'Cantidad':amount})
@@ -249,25 +250,29 @@ def update_register_book(book:Book_update):
         id_update_location=update_location(id_book=book_db.id_book,id_location=book.location)
     new_location=id_update_location
     #
+    
     if book.status is not None:
-        id_update_status=update_status(id_book=book_db.id_book,id_status=book.status)
+        update_status(id_book=book_db.id_book,id_status=book.status)
     #
-    new_status=id_update_status
+    
+    new_borrowed_to=dict()
+
     if book.borrowed_to is not None:
         id_update_borrowed_to=update_borrowed_to(id_book=book_db.id_book,borrowed_to=book.borrowed_to)
-    new_borrowed_to={
-        'id':id_update_status,
-        'first_name':book.borrowed_to.first_name,
-        'last_name':book.borrowed_to.last_name
-    }
+        new_borrowed_to={
+            'id':id_update_borrowed_to,
+            'first_name':book.borrowed_to.first_name,
+            'last_name':book.borrowed_to.last_name
+        }
+    else:
+        new_borrowed_to=None
+    
     if book.amount is not None:
         update_amount(id_title=book_db.id_title,amount=book.amount)
     
     return {
         'id':book_db.id_book,
         'authors_added':authors_added,
-        'location':new_location,
-        'status':new_status,
         'borrowed_to':new_borrowed_to
     }
 

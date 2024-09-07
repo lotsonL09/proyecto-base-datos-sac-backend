@@ -132,10 +132,10 @@ def execute_insert(query):
 
 def execute_update(query):
     with Session() as session:
-        register_updated=session.execute(query)
+        result=session.execute(query)
         session.commit()
-        id=register_updated.inserted_primary_key[0]
-    return id
+
+
 
 def execute_delete(query):
     with Session() as session:

@@ -42,13 +42,6 @@ querry_get_users_db=(Select(
 )
 
 
-
-
-def update_refresh_token_db(id_user,refresh_token):
-    query=get_update_query(table=usuario_table,filters={'id_usuario':id_user},params={'refresh_token':refresh_token})
-    execute_update(query=query)
-
-
 def get_user(user_name:str):
     with Session() as session:
         querry=querry_get_users.where(usuario_table.c.user_name == user_name)

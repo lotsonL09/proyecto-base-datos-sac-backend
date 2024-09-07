@@ -35,17 +35,17 @@ async def edit_equipment(equipment:Equipment):
 @update.put('/paper')
 async def edit_paper(paper:Paper_update):
     result=update_register_paper(paper=paper)
-    return result
+    return JSONResponse(result)
 
 @update.put('/proyect')
 async def edit_proyect(proyect:Proyect_update):
     result=update_register_proyect(proyect=proyect)
-    return result
+    return JSONResponse(result)
 
 @update.put('/trabajo')
 async def edit_trabajo(trabajo:Trabajo):
     result=update_register_trabajo(trabajo=trabajo)
-    return result
+    return JSONResponse(result)
 
 @update.put('/user')
 async def edit_user(user:User):

@@ -114,6 +114,7 @@ def add_member(id_paper:int,member:Member):
     id_member=get_id_member(member=member)
     query_insert_paper_member=get_insert_query_paper_member(id_paper=id_paper,id_member=id_member)
     _=execute_insert(query=query_insert_paper_member)
+    return id_member
 
 def delete_member(id_paper:int,id_member:int):
     query=get_delete_query(table=paper_autor_table,params={'paper_idP':id_paper,'idMiembro':id_member})
@@ -123,9 +124,17 @@ def update_register_paper(paper:Paper_update):
 
     if paper.title is not None:
         update_title(id_paper=paper.id,title=paper.title)
+
+    members_added=[]
+
     if len(paper.members_added) != 0:
         for member in paper.members_added:
-            add_member(id_paper=paper.id,member=member)
+            id_member=add_member(id_paper=paper.id,member=member)
+            members_added.append({
+                "id":id_member,
+                "first_name":member.first_name,
+                "last_name":member.last_name
+            })
     if len(paper.members_deleted) != 0:
         for member in paper.members_deleted:
             delete_member(id_paper=paper.id,id_member=member.id)
@@ -134,7 +143,10 @@ def update_register_paper(paper:Paper_update):
     if paper.year is not None:
         update_year(id_paper=paper.id,year=paper.year.year)
 
-    return 'Paper actualizado'
+    return {
+        "id":paper.id,
+        "members_added":members_added
+    }
 
 def delete_id_paper_member(id_paper:int):
     query=get_delete_query(table=paper_autor_table,params={'paper_idP':id_paper})

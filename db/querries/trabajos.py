@@ -94,7 +94,9 @@ def update_register_trabajo(trabajo:Trabajo):
         update_year(id_trabajo=trabajo.id,year=trabajo.year)
     if trabajo.link is not None:
         update_link(id_trabajo=trabajo.id,link=trabajo.link)
-    return 'Trabajo actualizado'
+    return {
+        "response":"Trabajo actualizado"
+    }
 
 def delete_trabajo(id_trabajo:int):
     delete_query=(delete(trabajos_table).where(
