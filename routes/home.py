@@ -24,41 +24,42 @@ home=APIRouter(prefix='/home')
 
 Session=sessionmaker(engine)
 
+#user=Depends(auth_user)
 
 @home.get('/books')
-async def get_books(user=Depends(auth_user)):
+async def get_books():
     query=querry_get_books
     json_data=get_data(section='books',querry=query)
     return json_data
 
 @home.get('/equipments')
-async def get_equipments(user=Depends(auth_user)):
+async def get_equipments():
     query=querry_get_equipments
     json_data=get_data(section='equipments',querry=query)
     return json_data
 
 @home.get('/papers')
-async def get_papers(user=Depends(auth_user)):
+async def get_papers():
     query=querry_get_papers
     json_data=get_data(section='papers',querry=query)
     return json_data
 
 
 @home.get('/projects')
-async def get_proyectos(user=Depends(auth_user)):
+async def get_proyectos():
     query=querry_get_proyectos
     json_data=get_data(section='projects',querry=query)
     return json_data
 
 
 @home.get('/trabajos')
-async def get_trabajos(user=Depends(auth_user)):
+async def get_trabajos():
     query=querry_get_trabajos
     json_data=get_data(section='trabajos',querry=query)
     return json_data
 
 @home.get('/status/book')
-async def get_status(user=Depends(auth_user)):
+async def get_status():
     query=query_get_status_book_equipment
     result=get_status_data(query)
     return {
@@ -66,7 +67,7 @@ async def get_status(user=Depends(auth_user)):
     }
 
 @home.get('/status/equipment')
-async def get_status(user=Depends(auth_user)):
+async def get_status():
     query=query_get_status_book_equipment
     result=get_status_data(query)
     return {
@@ -74,7 +75,7 @@ async def get_status(user=Depends(auth_user)):
     }
 
 @home.get('/status/project')
-async def get_status(user=Depends(auth_user)):
+async def get_status():
     query=query_get_status_proyect
     result=get_status_data(query)
     return {
