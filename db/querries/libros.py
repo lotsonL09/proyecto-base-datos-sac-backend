@@ -47,9 +47,10 @@ querry_get_books=(Select(
         func.aggregate_strings(
             func.concat('(',autor_table.c.IdAutor,',',autor_table.c.Autor,')'),';'
         ).label('autores'),
-        ubicacion_table.c.IdUbi,
-        estado_table.c.IdEstado,
-        func.concat(persona_table.c.Nombre,' ',persona_table.c.Apellido).label('nombre_completo')
+        func.concat('(',ubicacion_table.c.IdUbi,';',ubicacion_table.c.ubicacion,')'),
+        func.concat('(',estado_table.c.IdEstado,';',estado_table.c.estado,')'),
+        func.concat(persona_table.c.Nombre,' ',persona_table.c.Apellido).label('nombre_completo'),
+        titulo_table.c.Cantidad
     )
     .join(titulo_table        ,titulo_table.c.IdTitulo       ==    libro_table.c.IdTitulo)
     .join(titulo_autor_table  ,titulo_autor_table.c.IdTitulo ==    titulo_table.c.IdTitulo)

@@ -6,6 +6,7 @@ from db.querries.libros import delete_register_book
 from db.querries.papers import delete_register_paper
 from db.querries.proyectos import delete_register_proyect
 from db.querries.trabajos import delete_register_trabajo
+from db.querries.equipos import delete_register_equipment
 
 delete=APIRouter(prefix='/delete')
 
@@ -31,4 +32,10 @@ async def book_proyect(id:int):
 @delete.delete('/trabajo/{id}')
 async def book_proyect(id:int):
     result=delete_register_trabajo(id_trabajo=id)
+    return JSONResponse(result)
+
+
+@delete.delete('/equipment/{id}')
+async def book_proyect(id:int):
+    result=delete_register_equipment(id_equipment=id)
     return JSONResponse(result)

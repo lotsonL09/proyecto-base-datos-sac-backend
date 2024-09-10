@@ -16,6 +16,8 @@ from db.querries.cursos import get_courses_data,query_get_courses
 
 from db.querries.miembros import query_get_members,get_members_data
 
+from db.querries.users import querry_get_users
+
 from extra.helper_functions import get_data
 
 from config.auth import auth_user
@@ -29,34 +31,42 @@ Session=sessionmaker(engine)
 @home.get('/books')
 async def get_books():
     query=querry_get_books
-    json_data=get_data(section='books',querry=query)
+    json_data=get_data(section='books',query=query)
     return json_data
 
 @home.get('/equipments')
 async def get_equipments():
     query=querry_get_equipments
-    json_data=get_data(section='equipments',querry=query)
+    json_data=get_data(section='equipments',query=query)
     return json_data
 
 @home.get('/papers')
 async def get_papers():
     query=querry_get_papers
-    json_data=get_data(section='papers',querry=query)
+    json_data=get_data(section='papers',query=query)
     return json_data
 
 
 @home.get('/projects')
 async def get_proyectos():
     query=querry_get_proyectos
-    json_data=get_data(section='projects',querry=query)
+    json_data=get_data(section='projects',query=query)
     return json_data
 
 
 @home.get('/trabajos')
 async def get_trabajos():
     query=querry_get_trabajos
-    json_data=get_data(section='trabajos',querry=query)
+    json_data=get_data(section='trabajos',query=query)
     return json_data
+
+@home.get('/users')
+async def get_users():
+    query=querry_get_users
+    result=get_data(section='users',query=query)
+    return {
+        "users":result
+    }
 
 @home.get('/status/book')
 async def get_status():

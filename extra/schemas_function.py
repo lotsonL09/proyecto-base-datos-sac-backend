@@ -1,6 +1,57 @@
 from entities.proyect import Proyect
 from entities.share.shared import Person
 
+def fix_register(register):
+    return {
+            'id':int(register.split(',')[0][1:]),
+            'value':register.split(',')[1][:-1]
+        }
+
+def fix_register_2(register):
+    return {
+            'id':int(register[0][1:]),
+            'value':register[1][:-1]
+        }
+
+def fix_register_3(register):
+    id=int(register.split(',')[0][1:])
+    first_name=register.split(',')[1]
+    last_name=register.split(',')[2][:-1]
+    return {
+            'id':id,
+            'first_name':first_name,
+            'last_name':last_name
+        }
+
+
+def scheme_book(params,book_row):
+    book_dict=dict()
+
+    for key,value in zip(params,book_row):
+        
+        if key == 'authors' and (len(value.split(';')) == 1):
+            author=value
+            book_dict[key]=[]
+            book_dict[key].append(fix_register(author))
+        elif key=='authors' and (len(value.split(';')) > 1):
+            authors=value.split(';')[:-1]
+            book_dict[key]=[]
+            for author in authors:
+                book_dict[key].append(fix_register(author))
+        elif key == 'location':
+            location=value.split(';')
+            print(location)
+            book_dict[key]=[]
+            book_dict[key].append(fix_register_2(location))
+        elif key == 'status':
+            status=value.split(';')
+            book_dict[key]=[]
+            book_dict[key].append(fix_register_2(status))
+        else:
+            book_dict[key]=value
+
+    return book_dict
+
 
 def scheme_user(user_row):
     return {
@@ -13,6 +64,68 @@ def scheme_user(user_row):
         'phone':user_row[6],
         'disabled':user_row[7]
     }
+
+def scheme_paper(params,paper_row):
+    paper_dict=dict()
+    for key,value in zip(params,paper_row):
+        if key == 'members' and (len(value.split(';')) == 1):
+            member=value
+            paper_dict[key]=[]
+            paper_dict[key].append(fix_register_3(member))
+        elif key=='members' and (len(value.split(';')) > 1):
+            members=value.split(';')
+            paper_dict[key]=[]
+            for member in members:
+                paper_dict[key].append(fix_register_3(member))
+        else:
+            paper_dict[key]=value
+    return paper_dict
+
+
+def scheme_project(params,project_row):
+    project_dict=dict()
+    for key,value in zip(params,project_row):
+        if key == 'researchers' and (len(value.split(';')) == 1):
+            member=value
+            project_dict[key]=[]
+            project_dict[key].append(fix_register_3(member))
+        elif key=='researchers' and (len(value.split(';')) > 1):
+            members=value.split(';')[:-1]
+            project_dict[key]=[]
+            for member in members:
+                project_dict[key].append(fix_register_3(member))
+        else:
+            project_dict[key]=value
+    
+    return project_dict
+
+def scheme_trabajo(trabajo_row):
+    return {
+        'id':trabajo_row[0],
+        'title':trabajo_row[1],
+        'course':trabajo_row[2],
+        'year':f'{trabajo_row[3]}',
+        'link':trabajo_row[4],
+    }
+
+def scheme_equipment(params,equipment_row):
+
+    equipment_dict=dict()
+
+    for key,value in zip(params,equipment_row):
+
+        if key == 'location':
+            location=value.split(';')
+            equipment_dict[key]=fix_register_2(location)
+        elif key == 'status':
+            status=value.split(';')
+            equipment_dict[key]=fix_register_2(status)
+        else:
+            equipment_dict[key]=value
+
+
+    return equipment_dict
+
 
 def scheme_user_db(user_row):
     return {

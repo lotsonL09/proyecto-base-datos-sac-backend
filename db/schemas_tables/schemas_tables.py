@@ -82,15 +82,17 @@ titulo_autor_table=Table(
 tipo_table=Table(
     'tipo',
     metadata_obj,
-    Column('IdTipo',primary_key=True,autoincrement=True),
+    Column('IdTipo',Integer,primary_key=True,autoincrement=True),
     Column('Tipo',String(100))
 )
 
 equipo_table=Table(
     'equipo',
     metadata_obj,
-    Column('IdEquipo',primary_key=True,autoincrement=True),
-    Column('Descripción',String(100)),
+    Column('IdEquipo',Integer,primary_key=True,autoincrement=True),
+    Column('Equipo',String(100)),
+    Column('Descripcion',String(1000)),
+    Column('Evidencia',String(250)),
     Column('Procedencia',String(200)),
     Column('Año_adquisicion',String(50)),
     Column('IdTipo',Integer,ForeignKey('tipo.IdTipo')),

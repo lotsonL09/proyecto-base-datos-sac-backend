@@ -14,6 +14,7 @@ from db.querries.libros import update_register_book
 from db.querries.papers import update_register_paper
 from db.querries.proyectos import update_register_proyect
 from db.querries.trabajos import update_register_trabajo
+from db.querries.equipos import update_register_equipment
 
 update=APIRouter(prefix='/update')
 
@@ -29,8 +30,8 @@ async def edit_book(book:Book_update):
 
 @update.put('/equipment')
 async def edit_equipment(equipment:Equipment):
-    print(equipment.date.strftime("%Y-%m-%d"))
-    return 'Done'
+    result=update_register_equipment(equipment=equipment)
+    return JSONResponse(result)
 
 @update.put('/paper')
 async def edit_paper(paper:Paper_update):

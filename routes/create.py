@@ -11,6 +11,7 @@ from db.querries.libros import create_register_book
 from db.querries.papers import create_register_paper
 from db.querries.proyectos import create_register_proyect
 from db.querries.trabajos import create_register_trabajo
+from db.querries.equipos import create_register_equipment
 
 create=APIRouter(prefix='/create')
 
@@ -26,8 +27,8 @@ async def create_book(book:Book):
 
 @create.post('/equipment')
 async def create_equipment(equipment:Equipment):
-    print(equipment.date.strftime("%Y-%m-%d"))
-    return 'Done'
+    result=create_register_equipment(equipment=equipment)
+    return result
 
 @create.post('/paper')
 async def create_paper(paper:Paper):

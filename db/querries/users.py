@@ -14,6 +14,33 @@ from extra.helper_functions import execute_get,get_insert_query,execute_insert
 Session=sessionmaker(engine)
 
 
+querry_get_users=(Select(
+    usuario_table.c.id_usuario,
+    usuario_table.c.user_name,
+    usuario_table.c.first_name,
+    usuario_table.c.last_name,
+    usuario_table.c.email,
+    usuario_table.c.category,
+    usuario_table.c.phone,
+    usuario_table.c.disabled
+).where(usuario_table.c.disabled == False)
+.select_from(usuario_table))
+
+
+"""
+Column('id_usuario',Integer,primary_key=True,autoincrement=True),
+    Column('user_name',String(100)),
+    Column('password',String(100)),
+    Column('first_name',String(100)),
+    Column('last_name',String(100)),
+    Column('email',String(100)),
+    Column('category',String(50)),
+    Column('phone',String(20)),
+    Column('refresh_token',String(250)),
+    Column('disabled',Boolean)
+"""
+
+
 def get_user_query(params:list,filter:dict) -> User|User_DB:
     
     columns_to_select=[getattr(usuario_table.c,param) for param in params]
@@ -62,21 +89,6 @@ def get_user_db(user_name:str):
         return user_found
     else:
         return 'User not found'
-
-def get_insert_querry_user(user:User_DB):
-    insert_querry=insert(usuario_table).values(
-        user_name=user.user_name,
-        password=user.password,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        category=user.category,
-        phone=user.phone,
-        refresh_token=user.refresh_token,
-        disabled=user.disabled
-    )
-    return insert_querry
-
 
 def insert_user(user:User_DB):
     params={

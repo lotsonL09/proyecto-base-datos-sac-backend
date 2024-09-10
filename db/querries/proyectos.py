@@ -19,8 +19,8 @@ querry_get_proyectos=(Select(
     proyectos_table.c.Proyecto,
     func.concat(coordinador.c.nombre,' ',coordinador.c.apellido).label('Coordinador'),
     func.aggregate_strings(
-        distinct(func.concat(investigador.c.nombre,' ',investigador.c.apellido))
-            .op('ORDER BY')(func.concat(investigador.c.nombre,' ',investigador.c.apellido)),
+        distinct(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,')'))
+            .op('ORDER BY')(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,')')),
         ';'
     ).label('Investigadores'),
     func.aggregate_strings(

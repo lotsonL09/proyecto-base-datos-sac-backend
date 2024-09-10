@@ -5,6 +5,7 @@ from db.schemas_tables.schemas_tables import papers_table,miembros_table,paper_a
 from db.schemas_tables.schemas_tables import miembros_table
 
 from extra.helper_functions import execute_insert,execute_update,execute_delete,get_id,get_insert_query,get_update_query,get_delete_query
+from extra.helper_functions import get_update_query,execute_update
 
 from entities.paper import Paper,Paper_update
 from entities.share.shared import Member
@@ -13,7 +14,7 @@ querry_get_papers=(Select(
     papers_table.c.idPaper,
     papers_table.c.título,
     func.aggregate_strings(
-        func.concat(miembros_table.c.nombre,' ',miembros_table.c.apellido)
+        func.concat('(',miembros_table.c.idMiembro,',',miembros_table.c.nombre,',',miembros_table.c.apellido,')')
             .op('ORDER BY')(func.concat(miembros_table.c.nombre,' ',miembros_table.c.apellido)),
         ';'
     ).label('miembros'),

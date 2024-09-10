@@ -13,6 +13,8 @@ from db.querries.estados import query_get_status_book_equipment,get_status_data
 
 from db.schemas_tables.schemas_tables import ubicacion_table,estado_table
 
+from extra.schemas_function import scheme_trabajo,scheme_equipment,scheme_book,scheme_user,scheme_paper,scheme_project
+
 import jwt
 
 from config.config import settings
@@ -23,59 +25,38 @@ Session=sessionmaker(engine)
 
 
 columns_data={
-    'books':['id','title','authors','location','status','borrowed_to'],
-    'equipments':['id','Description','type','origin','year','location','status'],
+    'books':['id','title','authors','location','status','borrowed_to','amount'],
+    'equipments':['id','equipment','description','evidence','type','origin','year','location','status'],
     'papers':['id','title','members','year','link'],
-    'projects':['id','project','coordinator','researches','agreement','status','year_start','year_end'],
+    'projects':['id','project','coordinator','researchers','agreement','status','year_start','year_end'],
     'trabajos':['id','title','course','year','link']
 }
 
 #HACER DESPUES EL DE MIEMBROS
 
+#TODO: OPTIMIZAR ESTA FUNCION
+
 def get_json(section:str,data:Tuple):
-    columns=columns_data[section]
-    dict_json={}
-    for key,value in zip(columns,data):
-        if type(value) is not str:
-            dict_json[key]=value
-            if key == 'location':
-                query=querry_get_location.where(ubicacion_table.c.IdUbi == value)
-                location=get_locations_data(query=query)[0]
-                dict_json[key]={
-                    'id':location.id,
-                    "value":location.value
-                }
 
-            if key == 'status':
-                query=query_get_status_book_equipment.where(estado_table.c.IdEstado == value)
-                status=get_status_data(query=query)[0]
-                dict_json[key]={
-                    'id':status.id,
-                    "value":status.value
-                }
-        else:
-            if key=='authors' and (len(value.split(';')) == 1):
-                author=value
-                dict_json[key]=[]
-                dict_json[key].append({
-                        'id':int(author.split(',')[0][1:]),
-                        'value':author.split(',')[1][:-1]
-                    })
-            elif key=='authors' and (len(value.split(';')) > 1):
-                authors=value.split(';')[:-1]
-                dict_json[key]=[]
-                for author in authors:
-                    dict_json[key].append({
-                        'id':int(author.split(',')[0][1:]),
-                        'value':author.split(',')[1][:-1]
-                    })
-            else:
-                dict_json[key]=value
-    return dict_json
+    if section == 'books':
+        return scheme_book(params=columns_data[section],book_row=data)
+    if section == 'equipments':
+        return scheme_equipment(params=columns_data[section],equipment_row=data)
+    if section == 'papers':
+        return scheme_paper(params=columns_data[section],paper_row=data)
+    if section == 'projects':
+        return scheme_project(params=columns_data[section],project_row=data)
+    if section == 'trabajos':
+        return scheme_trabajo(trabajo_row=data)
+    if section == 'users':
+        return scheme_user(data)
 
-def get_data(section:str,querry):
+
+#TODO: OPTIMIZAR ESTA FUNCION
+
+def get_data(section:str,query):
     with Session() as session:
-        data=session.execute(querry).fetchall()
+        data=session.execute(query).fetchall()
     json_all=[]
     for register in data:
         register_json=get_json(section,register)
@@ -134,8 +115,6 @@ def execute_update(query):
     with Session() as session:
         result=session.execute(query)
         session.commit()
-
-
 
 def execute_delete(query):
     with Session() as session:
