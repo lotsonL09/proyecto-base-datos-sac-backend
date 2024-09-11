@@ -29,39 +29,39 @@ Session=sessionmaker(engine)
 #user=Depends(auth_user)
 
 @home.get('/books')
-async def get_books():
+async def get_books(user=Depends(auth_user)):
     query=querry_get_books
     json_data=get_data(section='books',query=query)
     return json_data
 
 @home.get('/equipments')
-async def get_equipments():
+async def get_equipments(user=Depends(auth_user)):
     query=querry_get_equipments
     json_data=get_data(section='equipments',query=query)
     return json_data
 
 @home.get('/papers')
-async def get_papers():
+async def get_papers(user=Depends(auth_user)):
     query=querry_get_papers
     json_data=get_data(section='papers',query=query)
     return json_data
 
 
 @home.get('/projects')
-async def get_proyectos():
+async def get_proyectos(user=Depends(auth_user)):
     query=querry_get_proyectos
     json_data=get_data(section='projects',query=query)
     return json_data
 
 
 @home.get('/trabajos')
-async def get_trabajos():
+async def get_trabajos(user=Depends(auth_user)):
     query=querry_get_trabajos
     json_data=get_data(section='trabajos',query=query)
     return json_data
 
 @home.get('/users')
-async def get_users():
+async def get_users(user=Depends(auth_user)):
     query=querry_get_users
     result=get_data(section='users',query=query)
     return {
