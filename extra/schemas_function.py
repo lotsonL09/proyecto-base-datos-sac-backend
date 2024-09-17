@@ -40,13 +40,11 @@ def scheme_book(params,book_row):
                 book_dict[key].append(fix_register(author))
         elif key == 'location':
             location=value.split(';')
-            print(location)
             book_dict[key]=[]
             book_dict[key].append(fix_register_2(location))
         elif key == 'status':
             status=value.split(';')
-            book_dict[key]=[]
-            book_dict[key].append(fix_register_2(status))
+            book_dict[key]=fix_register_2(status)
         else:
             book_dict[key]=value
 
