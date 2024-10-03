@@ -9,7 +9,9 @@ from extra.schemas_function import scheme_user,scheme_user_db
 
 from entities.user import User_DB,User
 
-from extra.helper_functions import execute_get,get_insert_query,execute_insert
+from extra.helper_functions import (execute_get,get_insert_query,
+                                    execute_insert,execute_update,
+                                    get_update_query)
 
 Session=sessionmaker(engine)
 
@@ -58,9 +60,18 @@ user_column=['id_usuario','user_name','first_name','last_name',
 user_db_column=['id_usuario','user_name','password','first_name',
                 'last_name','email','category','phone','refresh_token','disabled']
 
-
 def get_user_by_id(id:int):
     query=get_user_query(params=user_column,filter={'id_usuario':id})
+    user_row=execute_get(query=query)
+    if not user_row == None:
+        user_scheme=scheme_user(user_row=user_row)
+        user_found=User(**user_scheme)
+        return user_found
+    else:
+        return 'User not found'
+
+def get_user_by_email(email:str):
+    query=get_user_query(params=user_column,filter={'email':email})
     user_row=execute_get(query=query)
     if not user_row == None:
         user_scheme=scheme_user(user_row=user_row)
@@ -106,4 +117,8 @@ def insert_user(user:User_DB):
     _=execute_insert(query=query)
     inserted_user=get_user_db(user.user_name)
     return inserted_user
+
+def update_password(id_user:int,password:str):
+    query=get_update_query(table=usuario_table,filters={"id_usuario":id_user},params={"password":password})
+    execute_update(query=query)
 

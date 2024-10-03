@@ -31,3 +31,5 @@ class Book_db(BaseModel):
     id_location:int|None=None
     id_status:int|None=None
     id_persona:int|None=None
+
+

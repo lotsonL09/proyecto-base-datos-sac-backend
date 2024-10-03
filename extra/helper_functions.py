@@ -1,28 +1,26 @@
 from typing import Tuple
 
 from sqlalchemy import select,text,insert,update,delete
+
 from sqlalchemy.orm import sessionmaker
 
 from fastapi.encoders import jsonable_encoder
 
 from db.db_session import engine
 
-from db.querries.ubicacion import get_locations_data,querry_get_location
-
-from db.querries.estados import query_get_status_book_equipment,get_status_data
-
-from db.schemas_tables.schemas_tables import ubicacion_table,estado_table
-
-from extra.schemas_function import scheme_trabajo,scheme_equipment,scheme_book,scheme_user,scheme_paper,scheme_project
+from extra.schemas_function import (scheme_trabajo,scheme_equipment,
+                                    scheme_book,scheme_user,scheme_paper,
+                                    scheme_project)
 
 import jwt
 
 from config.config import settings
 
+from config.mail import mail,create_message
+
 from datetime import datetime,timedelta,timezone
 
 Session=sessionmaker(engine)
-
 
 columns_data={
     'books':['id','title','authors','location','status','borrowed_to','amount'],
@@ -149,3 +147,11 @@ def create_refresh_token(subject:str,expire_delta:int=settings.REFRESH_TOKEN_EXP
     )
     return token
 
+
+async def send_message(subject:str,body:str,recipients:list):
+
+    message=create_message(recipients=recipients,
+                        subject=subject,
+                        body=body)
+    
+    await mail.send_message(message=message)

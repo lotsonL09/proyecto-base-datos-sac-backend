@@ -20,6 +20,10 @@ from extra.helper_functions import get_update_query,execute_update
 
 from db.schemas_tables.schemas_tables import usuario_table
 
+from config.config import settings
+
+from config.mail import create_url_safe_token, decode_url_safe_token,create_message,mail
+
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl='token')
 
 """
@@ -142,10 +146,13 @@ def login_process(user_form,password_form):
         "token_type":"bearer"
     }
 
-def register_process(user:User_DB):
+def hash_password(password:str):
+    return pwd_context.hash(password)
+
+async def register_process(user:User_DB):
 
     if type(get_user(user.user_name)) == User:
-        raise HTTPException(status_code=status.HTTP_201_CREATED,
+        raise HTTPException(status_code=status.HTTP_208_ALREADY_REPORTED,
                             detail='User already exists')
     
     pwd_encrypted=pwd_context.hash(user.password)
@@ -153,6 +160,29 @@ def register_process(user:User_DB):
 
     user_data=insert_user(user=user)
 
-    return user_data
+    token=create_url_safe_token(data={"email":user.email})
+
+    #TODO: MOdificar luego
+    link=f"http://{settings.DOMAIN}/login/verify/{token}"
+
+    html_message=f"""
+
+    <h1> Verify your Email </h1>
+    <p>Please click this link <a href="{link}">link</a> to verify your email</p>
+
+
+    """
+
+    message=create_message(recipients=[user.email],
+                        subject="Verify your email",
+                        body=html_message)
+    
+    await mail.send_message(message=message)
+
+
+    return {
+        "detail":"Account created! Check email to verify your account",
+        "user_data":user_data
+    }
 
 
