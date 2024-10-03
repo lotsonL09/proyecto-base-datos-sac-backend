@@ -18,6 +18,7 @@ login=APIRouter(prefix='/login',
 
 @login.post('/')
 async def login_root(form:OAuth2PasswordRequestForm=Depends()):
+    print("formulario: ",form.username)
     return login_process(user_form=form.username,password_form=form.password)
 
 @login.post('/register')

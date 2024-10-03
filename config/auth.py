@@ -120,7 +120,6 @@ async def refresh_token(token:str=Depends(oauth2_scheme)):
         error
 
 def login_process(user_form,password_form):
-
     user=get_user_db(user_form)
 
     if not type(user) == User_DB:
