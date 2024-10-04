@@ -90,7 +90,8 @@ async def auth_user(token:dict=Depends(oauth2_scheme)) -> User | str:
         user_name=data.get("sub")
         if user_name is None:
             raise error
-        return get_user(user_name=user_name)
+        #return get_user(user_name=user_name)
+        return get_user(field="user_name",value=user_name)
     except InvalidTokenError:
         raise error
 
@@ -150,9 +151,13 @@ def hash_password(password:str):
 
 async def register_process(user:User_DB):
 
-    if type(get_user(user.user_name)) == User:
+    if type(get_user(field="user_name",value=user.user_name)) == User:
         raise HTTPException(status_code=status.HTTP_208_ALREADY_REPORTED,
                             detail='User already exists')
+    
+    if type(get_user(field="email",value=user.email)) == User:
+        raise HTTPException(status_code=status.HTTP_208_ALREADY_REPORTED,
+                            detail='Email already exists')
     
     pwd_encrypted=pwd_context.hash(user.password)
     user.password=pwd_encrypted
@@ -177,7 +182,6 @@ async def register_process(user:User_DB):
                         body=html_message)
     
     await mail.send_message(message=message)
-
 
     return {
         "detail":"Account created! Check email to verify your account",

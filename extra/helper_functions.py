@@ -12,6 +12,8 @@ from extra.schemas_function import (scheme_trabajo,scheme_equipment,
                                     scheme_book,scheme_user,scheme_paper,
                                     scheme_project)
 
+from db.schemas_tables.schemas_tables import records_table
+
 import jwt
 
 from config.config import settings
@@ -147,7 +149,6 @@ def create_refresh_token(subject:str,expire_delta:int=settings.REFRESH_TOKEN_EXP
     )
     return token
 
-
 async def send_message(subject:str,body:str,recipients:list):
 
     message=create_message(recipients=recipients,
@@ -155,3 +156,31 @@ async def send_message(subject:str,body:str,recipients:list):
                         body=body)
     
     await mail.send_message(message=message)
+
+actions={
+    "create":1,
+    "update":2,
+    "delete":3
+}
+sections={
+    "books":1,
+    "papers":2,
+    "equipments":3,
+    "projects":4,
+    "trabajos":5,
+    "users":6
+}
+
+def send_activity_record(id_user,section,action,id_on_section=None):
+
+    time_now=datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+
+    params_records={"id_user":id_user,
+                    "id_section":sections[section],
+                    "id_action":actions[action],
+                    "id_on_section":id_on_section,
+                    "time":time_now}
+    
+    query=get_insert_query(table=records_table,params=params_records)
+    
+    _=execute_insert(query=query)

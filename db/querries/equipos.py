@@ -2,12 +2,21 @@ from fastapi import HTTPException,status
 
 from sqlalchemy import Select,func
 
-from db.schemas_tables.schemas_tables import equipo_table,tipo_table,ubicacion_table,estado_table
+from db.schemas_tables.schemas_tables import (equipo_table,tipo_table,
+                                            ubicacion_table,estado_table,
+                                            records_table)
 
-from extra.helper_functions import get_id,get_insert_query,execute_insert
-from extra.helper_functions import get_update_query,execute_update,get_delete_query,execute_delete
+from extra.helper_functions import (get_id,get_insert_query,
+                                    execute_insert)
+
+from extra.helper_functions import (get_update_query,execute_update,
+                                    get_delete_query,execute_delete,send_activity_record)
 
 from entities.equipment import Equipment
+
+from datetime import datetime
+
+from entities.user import User
 
 querry_get_equipments=(Select(
         equipo_table.c.IdEquipo,
@@ -87,15 +96,20 @@ def get_id_equipment(equipment:Equipment):
         raise HTTPException(status_code=status.HTTP_302_FOUND,
                                     detail='Este equipo ya está registrado')
 
-def create_register_equipment(equipment:Equipment):
+def create_register_equipment(equipment:Equipment,user:User):
 
-    _=get_id_equipment(equipment=equipment)
+    id_equipment=get_id_equipment(equipment=equipment)
 
-    return 'Registro realizado'
+    send_activity_record(id_user=user.id,section="equipments",id_on_section=id_equipment,action="create")
+
+    return {
+        "message":"Equipo agregado"
+    }
 
 def update_equipment_name(id_equipment:int,equipment_name:str):
     query=get_update_query(table=equipo_table,filters={'IdEquipo':id_equipment},params={'Equipo':equipment_name})
     execute_update(query=query)
+
 
 def update_description(id_equipment:int,description:str):
     query=get_update_query(table=equipo_table,filters={'IdEquipo':id_equipment},params={'Descripcion':description})
@@ -127,7 +141,7 @@ def update_status(id_equipment:int,id_status:int):
     execute_update(query=query)
 
 
-def update_register_equipment(equipment:Equipment):
+def update_register_equipment(equipment:Equipment,user:User):
     
     if equipment.equipment is not None:
         update_equipment_name(id_equipment=equipment.id,equipment_name=equipment.equipment)
@@ -146,13 +160,16 @@ def update_register_equipment(equipment:Equipment):
     if equipment.status is not None:
         update_status(id_equipment=equipment.id,id_status=equipment.status)
     
+    send_activity_record(id_user=user.id,section="equipments",id_on_section=equipment.id,action="update")
+
     return {
         'response':'Equipo actualizado'
     }
 
-def delete_register_equipment(id_equipment:int):
+def delete_register_equipment(id_equipment:int,user:User):
     query=get_delete_query(table=equipo_table,params={'IdEquipo':id_equipment})
     execute_delete(query=query)
+    send_activity_record(id_user=user.id,section="equipments",action="delete")
     return {
         'response':'Equipo eliminado'
     }

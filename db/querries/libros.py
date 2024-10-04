@@ -1,20 +1,27 @@
 from fastapi import HTTPException,status
 
-from sqlalchemy import Select,func,insert
+from sqlalchemy import Select,func
 from sqlalchemy.orm import sessionmaker
 
-from db.schemas_tables.schemas_tables import titulo_table,autor_table,ubicacion_table
-from db.schemas_tables.schemas_tables import estado_table,persona_table,libro_table,titulo_autor_table
-from db.schemas_tables.schemas_tables import titulo_table,estado_table
+from db.schemas_tables.schemas_tables import (titulo_table,autor_table,ubicacion_table,
+                                            estado_table,persona_table,libro_table,
+                                            titulo_autor_table,titulo_table,estado_table)
 
 from db.db_session import engine
 
-from entities.book import Borrowed_to,Book,Author,Book_db,Book_update
+from entities.book import (Borrowed_to,Book,
+                        Author,Book_db,
+                        Book_update)
 
-from extra.helper_functions import execute_insert,execute_delete,execute_update,get_id,get_update_query,get_delete_query
+from extra.helper_functions import (execute_insert,execute_delete,
+                                    execute_update,get_id,
+                                    get_update_query,get_delete_query,
+                                    get_insert_query,send_activity_record
+                                    )
+
+from entities.user import User
 
 from extra.schemas_function import scheme_book_db
-#COMPROBAR
 
 Session=sessionmaker(engine)
 
@@ -111,14 +118,6 @@ def get_id_persona(persona:Borrowed_to|None):
         return id_persona
     return id_persona[0]
 
-#GET QUERRIES INSERT
-
-def get_insert_query(table,params:dict):
-    query=insert(table).values(**params)
-    return query
-
-#INSERT REGISTER
-
 def insert_author(user:str):
     params={'Autor':user}
     query=get_insert_query(table=autor_table,params=params)
@@ -154,8 +153,6 @@ def insert_title_author(id_title:int,id_author:int):
     query=get_insert_query(table=titulo_autor_table,params=params)
     id=execute_insert(query=query)
     return id
-
-#UPDATE TITULO
 
 def update_title(id_titulo:int,new_title=str):
     query=get_update_query(table=titulo_table,filters={'IdTitulo':id_titulo},params={'Titulo':new_title})
@@ -200,11 +197,7 @@ def delete_title(id_title:int):
     query=get_delete_query(table=titulo_table,params={'IdTitulo':id_title})
     execute_delete(query=query)
 
-#DELETE TITULO
-
-#FUNCTIONS
-
-def create_register_book(book:Book):
+def create_register_book(book:Book,user:User):
 
     id_title=get_id_title(title=book.title,
                     amount=book.amount)
@@ -219,16 +212,24 @@ def create_register_book(book:Book):
         _=insert_title_author(id_title=id_title,
                             id_author=id_author)
 
-    _=insert_book(id_title=id_title,id_location=book.location,
+    id_book=insert_book(id_title=id_title,id_location=book.location,
                     id_status=book.status,id_persona=id_persona)
 
-    return 'Registro realizado'
+    send_activity_record(id_user=user.id,section="books",id_on_section=id_book,action="create")
 
-def update_register_book(book:Book_update):
+    return {
+        'message':'Libro agregado'
+    }
+
+def update_register_book(book:Book_update,user:User):
 
     result=get_book_ids(book.id)
+
+    if result is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Libro no encontrado")
+
     book_db=Book_db(**scheme_book_db(result))
-    #print('IDS',book_db)
 
     if book.title is not None:
         update_title(id_titulo=book_db.id_title,new_title=book.title)
@@ -249,8 +250,6 @@ def update_register_book(book:Book_update):
     #
     if book.location is not None:
         id_update_location=update_location(id_book=book_db.id_book,id_location=book.location)
-    new_location=id_update_location
-    #
     
     if book.status is not None:
         update_status(id_book=book_db.id_book,id_status=book.status)
@@ -271,18 +270,28 @@ def update_register_book(book:Book_update):
     if book.amount is not None:
         update_amount(id_title=book_db.id_title,amount=book.amount)
     
+    send_activity_record(id_user=user.id,section="books",id_on_section=book.id,action="update")
+
     return {
         'id':book_db.id_book,
         'authors_added':authors_added,
         'borrowed_to':new_borrowed_to
     }
 
-def delete_register_book(id:int):
+def delete_register_book(id:int,user:User):
     result=get_book_ids(id)
+
+    if result is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Libro no encontrado")
+
     book_db=Book_db(**scheme_book_db(result))
     delete_book(id_book=book_db.id_book)
     delete_title_author(id_title=book_db.id_title)
     delete_title(id_title=book_db.id_title)
+
+    send_activity_record(id_user=user.id,section="books",action="delete")
+
     return {
         "response":'Libro eliminado'
     }

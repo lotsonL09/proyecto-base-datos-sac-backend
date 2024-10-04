@@ -130,34 +130,41 @@
 
 # # wb.save("book.xlsx")
 
-from sqlalchemy import delete
-from db.schemas_tables.schemas_tables import titulo_autor_table
+# from sqlalchemy import delete
+# from db.schemas_tables.schemas_tables import titulo_autor_table
 
 
-def get_querry_delete_title_autor(id_title:int,id_author:int):
-    return (delete(titulo_autor_table)
-    .where(titulo_autor_table.c.IdTitulo == id_title
-    ).where(titulo_autor_table.c.IdAutor == id_author))
+# def get_querry_delete_title_autor(id_title:int,id_author:int):
+#     return (delete(titulo_autor_table)
+#     .where(titulo_autor_table.c.IdTitulo == id_title
+#     ).where(titulo_autor_table.c.IdAutor == id_author))
 
 # def get_query_delete(table:str,param:str,value):
 #     return delete(table).where(
 #         getattr(table.c,param) == value
 #     )
 
-params_dict={
-    "IdTitulo":12,
-    "IdAutor":12
-}
+# params_dict={
+#     "IdTitulo":12,
+#     "IdAutor":12
+# }
 
-def get_query_delete(table:str,params:dict):
-    query=delete(table)
-    for colum_name,value in params.items():
-        query=query.where(getattr(table.c,colum_name) == value)
-    return query
+# def get_query_delete(table:str,params:dict):
+#     query=delete(table)
+#     for colum_name,value in params.items():
+#         query=query.where(getattr(table.c,colum_name) == value)
+#     return query
 
 
 #query=get_query_delete(table=titulo_autor_table,param='IdTitulo',value=1)
 
-print('query 1',get_querry_delete_title_autor(id_title=12,id_author=12))
+# print('query 1',get_querry_delete_title_autor(id_title=12,id_author=12))
 
-print('query 2',get_query_delete(table=titulo_autor_table,params=params_dict))
+# print('query 2',get_query_delete(table=titulo_autor_table,params=params_dict))
+
+from datetime import datetime,timezone,time,date
+
+time_now=datetime.now()
+
+print(time_now.strftime("%Y-%m-%d %H-%M-%S"))
+

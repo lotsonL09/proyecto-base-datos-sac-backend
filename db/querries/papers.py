@@ -4,11 +4,14 @@ from sqlalchemy import Select,func,insert,select,update,delete
 from db.schemas_tables.schemas_tables import papers_table,miembros_table,paper_autor_table
 from db.schemas_tables.schemas_tables import miembros_table
 
-from extra.helper_functions import execute_insert,execute_update,execute_delete,get_id,get_insert_query,get_update_query,get_delete_query
-from extra.helper_functions import get_update_query,execute_update
+from extra.helper_functions import (execute_insert,execute_update,
+                                    execute_delete,get_id,get_insert_query,
+                                    get_update_query,get_delete_query,
+                                    get_update_query,execute_update,send_activity_record)
 
 from entities.paper import Paper,Paper_update
 from entities.share.shared import Member
+from entities.user import User
 
 querry_get_papers=(Select(
     papers_table.c.idPaper,
@@ -86,10 +89,11 @@ def get_id_member(member:Member):
     else:
         return id_member[0]
 
-def create_register_paper(paper:Paper):
+def create_register_paper(paper:Paper,user:User):
     id_paper=get_id_paper(title=paper.title,
                         link=paper.link,
                         year=paper.year.year)
+
     id_members=[]
     for member in paper.members:
         id_member=get_id_member(member=member)
@@ -97,7 +101,11 @@ def create_register_paper(paper:Paper):
     for id_member in id_members:
         _=insert_paper_member(id_member=id_member,
                             id_paper=id_paper)
-    return 'Registro realizado'
+        
+    send_activity_record(id_user=user.id,section="papers",id_on_section=paper.id,action="create")
+    return {
+        "message":"Paper registrado"
+    }
 
 def update_title(id_paper:int,title:str):
     query=get_update_query(table=papers_table,filters={'idPaper':id_paper},params={'título':title})
@@ -121,7 +129,7 @@ def delete_member(id_paper:int,id_member:int):
     query=get_delete_query(table=paper_autor_table,params={'paper_idP':id_paper,'idMiembro':id_member})
     execute_delete(query=query)
 
-def update_register_paper(paper:Paper_update):
+def update_register_paper(paper:Paper_update,user:User):
 
     if paper.title is not None:
         update_title(id_paper=paper.id,title=paper.title)
@@ -144,6 +152,8 @@ def update_register_paper(paper:Paper_update):
     if paper.year is not None:
         update_year(id_paper=paper.id,year=paper.year.year)
 
+    send_activity_record(id_user=user.id,section="papers",id_on_section=paper.id,action="update")
+
     return {
         "id":paper.id,
         "members_added":members_added
@@ -157,13 +167,13 @@ def delete_paper(id_paper):
     query=get_delete_query(table=papers_table,params={'idPaper':id_paper})
     execute_delete(query=query)
 
-def delete_register_paper(id_paper:int):
+def delete_register_paper(id_paper:int,user:User):
 
     #delete id_paper - id_members
     delete_id_paper_member(id_paper=id_paper)
 
     delete_paper(id_paper=id_paper)
-
+    send_activity_record(id_user=user.id,section="papers",action="delete")
     return {
         "response":'Paper eliminado'
     }

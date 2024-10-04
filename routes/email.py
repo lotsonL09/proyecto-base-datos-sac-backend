@@ -16,12 +16,6 @@ async def send_mail(emails:Email):
 
     await send_message(subject="Welcome to the web page!",body=html_message,recipients=emails)
 
-    # message=create_message(recipients=emails,
-    #                     subject="Welcome",
-    #                     body=html)
-    
-    # await mail.send_message(message=message)
-
     return {"message":"Email sent successfully"}
 
 
@@ -41,12 +35,6 @@ async def password_reset_request(email_data:Password_Reset_Request):
     <p>Please click this link <a href="{link}">link</a> to reset your password</p>
 
     """
-
-    # message=create_message(recipients=[email],
-    #                     subject="Reset your password",
-    #                     body=html_message)
-    
-    # await mail.send_message(message=message)
 
     await send_message(subject="Reset your password",body=html_message,recipients=[email])
 
@@ -80,5 +68,5 @@ async def password_reset_confirm(token:str,passwords:Password_Reset_Confirm):
         return JSONResponse(
             content={"message":"Error occured during the process"}
         )
-    
+
 

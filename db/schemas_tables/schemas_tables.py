@@ -1,29 +1,10 @@
-from sqlalchemy import Table,Column, Integer,String,CheckConstraint,Boolean
-from sqlalchemy import MetaData
-from sqlalchemy import ForeignKey
+from sqlalchemy import (Table,Column, Integer,
+                        String,CheckConstraint,
+                        Boolean,MetaData,
+                        ForeignKey,UniqueConstraint,
+                        DateTime)
 
 metadata_obj=MetaData()
-
-# occupation_table=Table(
-#     'Occupation',
-#     metadata_obj,
-#     Column('id_occupation',primary_key=True,autoincrement=True),
-#     Column('occupation',String(50))
-# )
-
-# users_table=Table(
-#     'Users',
-#     metadata_obj,
-#     Column('id_user',primary_key=True,autoincrement=True),
-#     Column('user_name',String(50)),
-#     Column('first_name',String(50)),
-#     Column('last_name',String(50)),
-#     Column('id_occupation',ForeignKey('Occupation.id_occupation')),
-#     Column('birth_date',DateTime),
-#     Column('photo',String(50)),
-#     Column('availability',Boolean,nullable=False,default=0),
-# )
-
 
 autor_table = Table(
     'autor',
@@ -188,6 +169,33 @@ paper_autor_table=Table(
     Column('idMiembro',Integer,ForeignKey('miembros.idMiembro'),primary_key=True),
 )
 
+sections_table=Table(
+    'sections',
+    metadata_obj,
+    Column('id_section',Integer,primary_key=True,autoincrement=True),
+    Column('name',String),
+    UniqueConstraint('name',name='section_name')
+)
+
+actions_table=Table(
+    'actions',
+    metadata_obj,
+    Column('id_action',Integer,primary_key=True,autoincrement=True),
+    Column('action'),
+    UniqueConstraint('action',name='unique_section')
+)
+
+records_table=Table(
+    'records',
+    metadata_obj,
+    Column('id_record',Integer,primary_key=True,autoincrement=True),
+    Column('id_user',Integer,ForeignKey('usuario2.id_usuario')),
+    Column('id_section',Integer,ForeignKey('sections.id_section')),
+    Column('id_action',Integer,ForeignKey('actions.id_action')),
+    Column('id_on_section',Integer),
+    Column('time',DateTime)
+)
+
 usuario_table=Table(
     'Usuario_2',
     metadata_obj,
@@ -200,6 +208,8 @@ usuario_table=Table(
     Column('category',String(50)),
     Column('phone',String(20)),
     Column('refresh_token',String(250)),
-    Column('disabled',Boolean)
+    Column('disabled',Boolean),
+    UniqueConstraint('user_name',name="uc_users"),
+    UniqueConstraint('email',name="uc_email")
 )
 

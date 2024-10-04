@@ -80,8 +80,8 @@ def get_user_by_email(email:str):
     else:
         return 'User not found'
 
-def get_user(user_name:str):
-    query=get_user_query(params=user_column,filter={'user_name':user_name})
+def get_user(field:str,value):
+    query=get_user_query(params=user_column,filter={field:value})
     user_row=execute_get(query=query)
     if not user_row == None:
         user_scheme=scheme_user(user_row=user_row)

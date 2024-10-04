@@ -1,10 +1,17 @@
 from fastapi import status,HTTPException
-from sqlalchemy import Select,func,distinct,insert,update,delete
 
-from db.schemas_tables.schemas_tables import proyec_invest_table,proyectos_table,convenios_table,miembros_table,proyec_conv_table
-from db.schemas_tables.schemas_tables import estatus_table
+from sqlalchemy import Select,func,distinct,insert,delete
 
-from extra.helper_functions import execute_get,execute_insert,execute_update,execute_delete,get_id,get_insert_query,get_update_query,get_delete_query
+from db.schemas_tables.schemas_tables import (proyec_invest_table,proyectos_table,
+                                            convenios_table,miembros_table,
+                                            proyec_conv_table,estatus_table)
+
+from extra.helper_functions import (execute_insert,execute_update,execute_delete,
+                                    get_id,get_insert_query,get_update_query,
+                                    get_delete_query,send_activity_record)
+
+from entities.user import User
+
 from extra.schemas_function import scheme_proyect_to_db
 
 from entities.proyect import Proyect,Proyect_db,Agreement,Proyect_update,Period
@@ -144,7 +151,7 @@ def get_id_agreement(agreement:Agreement):
 
     return id_agreement[0]
 
-def create_register_proyect(proyect:Proyect):
+def create_register_proyect(proyect:Proyect,user:User):
 
     #Registro del coordinador
 
@@ -177,8 +184,12 @@ def create_register_proyect(proyect:Proyect):
     
     for id_agreement in id_agreements:
         _=insert_proyect_agreement(id_proyect=id_proyect,id_agreement=id_agreement)
-        
-    return 'Registro realizado'
+    
+    send_activity_record(id_user=user.id,section="projects",id_on_section=id_proyect,action="create")
+
+    return {
+        "message":"Proyecto agregado"
+    }
 
 def update_name(id_proyect:int,name:str):
     query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={'Proyecto':name})
@@ -242,62 +253,58 @@ def update_period(id_proyect:int,period:Period):
 
 #TODO: HACER UNA VERIFICACION DE LA FECHA
 
-def update_register_proyect(proyect:Proyect_update):
+def update_register_proyect(project:Proyect_update,user:User):
 
-    if proyect.name is not None:
-        update_name(id_proyect=proyect.id,name=proyect.name)
+    if project.name is not None:
+        update_name(id_proyect=project.id,name=project.name)
     
     coordinator_updated=None
 
-    if proyect.coordinator is not None:
-        id_coordiantor_updated=update_coordinator(id_proyect=proyect.id,coordinator=proyect.coordinator)
+    if project.coordinator is not None:
+        id_coordiantor_updated=update_coordinator(id_proyect=project.id,coordinator=project.coordinator)
 
         coordinator_updated={
             "id":id_coordiantor_updated,
-            "first_name":proyect.coordinator.first_name,
-            "last_name":proyect.coordinator.last_name
+            "first_name":project.coordinator.first_name,
+            "last_name":project.coordinator.last_name
         }
 
     researchers_updated=[]
 
-    if len(proyect.researchers_added) != 0:
-        for researcher in proyect.researchers_added:
-            id_researcher=add_researcher(id_proyect=proyect.id,researcher=researcher)
+    if len(project.researchers_added) != 0:
+        for researcher in project.researchers_added:
+            id_researcher=add_researcher(id_proyect=project.id,researcher=researcher)
             researchers_updated.append({
                 "id":id_researcher,
                 "first_name":researcher.first_name,
                 "last_name":researcher.last_name
             })
-    if len(proyect.researchers_deleted) != 0:
-        for researcher in proyect.researchers_deleted:
-            delete_researcher(id_proyect=proyect.id,id_reseracher=researcher.id)
+    if len(project.researchers_deleted) != 0:
+        for researcher in project.researchers_deleted:
+            delete_researcher(id_proyect=project.id,id_reseracher=researcher.id)
     
     agreements_updated=[]
 
-    if len(proyect.agreements_added) != 0:
-        for agreement in proyect.agreements_added:
-            id_agreement=add_agreement(id_proyect=proyect.id,agreement=agreement)
+    if len(project.agreements_added) != 0:
+        for agreement in project.agreements_added:
+            id_agreement=add_agreement(id_proyect=project.id,agreement=agreement)
             agreements_updated.append({
                 "id":id_agreement,
                 "name":agreement.name
             })
 
-    if len(proyect.agreements_deleted) != 0:
-        for agreement in proyect.agreements_deleted:
-            delete_agreement(id_proyect=proyect.id,id_agreement=agreement.id)
-    if proyect.status is not None:
-        update_status(id_proyect=proyect.id,id_status=proyect.status)
-    if proyect.period is not None:
-        # year_start=proyect.period.year_start.year
-        # year_end=proyect.period.year_start.year
+    if len(project.agreements_deleted) != 0:
+        for agreement in project.agreements_deleted:
+            delete_agreement(id_proyect=project.id,id_agreement=agreement.id)
+    if project.status is not None:
+        update_status(id_proyect=project.id,id_status=project.status)
+    if project.period is not None:
+        update_period(id_proyect=project.id,period=project.period)
 
-        # if year_start > year_end:
-        #     raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-        #                         detail="Ingrese los datos correctos")
-
-        update_period(id_proyect=proyect.id,period=proyect.period)
+    send_activity_record(id_user=user.id,section="projects",id_on_section=project.id,action="update")
+    
     return {
-        "id":proyect.id,
+        "id":project.id,
         "coordinator":coordinator_updated,
         "researchers_added":researchers_updated,
         "agreements_added":agreements_updated
@@ -321,10 +328,11 @@ def delete_proyect(id_proyect:int):
     ))
     execute_delete(query=delete_query)
 
-def delete_register_proyect(id_proyect:int):
+def delete_register_proyect(id_proyect:int,user:User):
     delete_id_proyect_researcher(id_proyect=id_proyect)
     delete_id_proyect_agreements(id_proyect=id_proyect)
     delete_proyect(id_proyect=id_proyect)
+    send_activity_record(id_user=user.id,section="projects",action="delete")
     return {
         "response":'Proyecto eliminado'
     }
