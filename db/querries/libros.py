@@ -161,7 +161,8 @@ def update_title(id_titulo:int,new_title=str):
 def add_author(id_title,author:Author):
     id_author=get_id_author(author=author.name)
     query=get_insert_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':id_author})
-    return execute_insert(query=query)
+    execute_insert(query=query)
+    return id_author
 
 def delete_author(id_title,author:Author):
     query=get_delete_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':author.id})
