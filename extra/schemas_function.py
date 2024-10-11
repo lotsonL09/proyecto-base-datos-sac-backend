@@ -34,7 +34,7 @@ def scheme_book(params,book_row):
             book_dict[key]=[]
             book_dict[key].append(fix_register(author))
         elif key=='authors' and (len(value.split(';')) > 1):
-            authors=value.split(';')[:-1]
+            authors=value.split(';')
             book_dict[key]=[]
             for author in authors:
                 book_dict[key].append(fix_register(author))
