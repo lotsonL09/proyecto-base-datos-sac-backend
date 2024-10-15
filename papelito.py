@@ -162,9 +162,29 @@
 
 # print('query 2',get_query_delete(table=titulo_autor_table,params=params_dict))
 
-from datetime import datetime,timezone,time,date
+# from datetime import datetime,timezone,time,date
 
-time_now=datetime.now()
+# time_now=datetime.now()
 
-print(time_now.strftime("%Y-%m-%d %H-%M-%S"))
+# print(time_now.strftime("%Y-%m-%d %H-%M-%S"))
+
+
+from sqlalchemy import Select,func
+from db.schemas_tables.schemas_tables import (sections_table,actions_table,
+                                            records_table,usuario_table)
+from extra.helper_functions import (get_data)
+
+query_get_records=(Select(
+    records_table.c.id_record,
+    usuario_table.c.user_name,
+    actions_table.c.message,
+    sections_table.c.name,
+    records_table.c.time
+    )
+    .join(records_table,records_table.c.id_action == actions_table.c.id_action)
+    .join(usuario_table,usuario_table.c.id_usuario == records_table.c.id_user)
+    .join(sections_table,sections_table.c.id_section == records_table.c.id_section))
+
+
+print(get_data(query=query_get_records,section="records"))
 

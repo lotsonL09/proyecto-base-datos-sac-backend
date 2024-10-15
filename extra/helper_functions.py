@@ -10,7 +10,7 @@ from db.db_session import engine
 
 from extra.schemas_function import (scheme_trabajo,scheme_equipment,
                                     scheme_book,scheme_user,scheme_paper,
-                                    scheme_project)
+                                    scheme_project,scheme_record)
 
 from db.schemas_tables.schemas_tables import records_table
 
@@ -32,6 +32,10 @@ columns_data={
     'trabajos':['id','title','course','year','link']
 }
 
+queries_data={
+    
+}
+
 #HACER DESPUES EL DE MIEMBROS
 
 #TODO: OPTIMIZAR ESTA FUNCION
@@ -50,6 +54,10 @@ def get_json(section:str,data:Tuple):
         return scheme_trabajo(trabajo_row=data)
     if section == 'users':
         return scheme_user(data)
+    if section == 'records':
+        data_user=data[:-2]
+        table_name,id_on_section=data[-2:]
+        return scheme_record(data_user)
 
 
 #TODO: OPTIMIZAR ESTA FUNCION

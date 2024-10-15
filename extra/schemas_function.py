@@ -181,3 +181,13 @@ def scheme_proyect_to_db(proyect:Proyect,id_coordinator:int):
         "id_status":proyect.status,
         "period":proyect.period
     }
+
+
+def scheme_record(record_row):
+    return {
+        'id':record_row[0],
+        'user_name':record_row[1],
+        'message':record_row[2],
+        'table':record_row[3],
+        'time':record_row[4]
+    }

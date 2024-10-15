@@ -22,6 +22,7 @@ async def get_current_user(user:User=Depends(auth_user)):
 async def return_user_me(current_user:User=Depends(get_current_user)):
     return current_user
 
+
 @users.get('/{id}')
 async def return_user(id:int):
 

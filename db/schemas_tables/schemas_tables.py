@@ -174,6 +174,7 @@ sections_table=Table(
     metadata_obj,
     Column('id_section',Integer,primary_key=True,autoincrement=True),
     Column('name',String),
+    Column('table_name',String),
     UniqueConstraint('name',name='section_name')
 )
 
@@ -181,7 +182,8 @@ actions_table=Table(
     'actions',
     metadata_obj,
     Column('id_action',Integer,primary_key=True,autoincrement=True),
-    Column('action'),
+    Column('action',String),
+    Column('message',String),
     UniqueConstraint('action',name='unique_section')
 )
 
