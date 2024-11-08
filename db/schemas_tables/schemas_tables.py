@@ -191,7 +191,7 @@ records_table=Table(
     'records',
     metadata_obj,
     Column('id_record',Integer,primary_key=True,autoincrement=True),
-    Column('id_user',Integer,ForeignKey('usuario2.id_usuario')),
+    Column('id_user',Integer,ForeignKey('usuario.id_usuario')),
     Column('id_section',Integer,ForeignKey('sections.id_section')),
     Column('id_action',Integer,ForeignKey('actions.id_action')),
     Column('id_on_section',Integer),

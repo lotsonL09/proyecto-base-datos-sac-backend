@@ -186,7 +186,7 @@ CREATE TABLE records(
     id_action INT,
     id_on_section INT,
     time DATETIME, #'1000-01-01 00:00:00' to '9999-12-31 23:59:59'
-    FOREIGN KEY(id_user) REFERENCES usuario_2(id_usuario),
+    FOREIGN KEY(id_user) REFERENCES usuario(id_usuario),
     FOREIGN KEY(id_section) REFERENCES sections(id_section),
     FOREIGN KEY(id_action) REFERENCES actions(id_action),
     PRIMARY KEY(id_record)
