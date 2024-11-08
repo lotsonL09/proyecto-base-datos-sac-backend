@@ -199,7 +199,7 @@ records_table=Table(
 )
 
 usuario_table=Table(
-    'Usuario_2',
+    'Usuario',
     metadata_obj,
     Column('id_usuario',Integer,primary_key=True,autoincrement=True),
     Column('user_name',String(100)),

@@ -60,13 +60,12 @@ def get_json(section:str,data:Tuple):
         return scheme_record(data_user)
 
 
-#TODO: OPTIMIZAR ESTA FUNCION
-
 def get_data(section:str,query):
     with Session() as session:
         data=session.execute(query).fetchall()
     json_all=[]
     for register in data:
+        print(register)
         register_json=get_json(section,register)
         json_all.append(register_json)
     return jsonable_encoder(json_all)

@@ -1,0 +1,69 @@
+USE sac;
+
+-- tabla proyec_Invest
+
+
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','3');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','28');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','97');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','98');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','99');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','11');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','8');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','100');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','101');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','102');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6000','13');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6001','28');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6001','3');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6002','79');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6002','103');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6002','4');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6002','13');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','104');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','105');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','84');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','106');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','98');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','107');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','108');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','109');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6003','110');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6004','28');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6004','4');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','108');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','103');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','28');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','4');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','2');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','13');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6005','6');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6006','3');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6006','84');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6006','108');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6006','27');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6007','3');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6007','28');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6007','2');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6008','112');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6008','113');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6009','108');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6009','84');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6009','14');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6009','28');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6009','65');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6011','3');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6011','114');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6011','115');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6011','13');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6011','116');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6011','117');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6012','89');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6012','118');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6012','119');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6012','93');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6014','120');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6014','115');
+INSERT INTO proyec_Invest(Proyec_idP,idMiembro)VALUES('6014','4');
+
+-- si se van a agregar registros directamente a la DB hacerlo después de este comentario

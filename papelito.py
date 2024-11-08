@@ -169,22 +169,58 @@
 # print(time_now.strftime("%Y-%m-%d %H-%M-%S"))
 
 
-from sqlalchemy import Select,func
-from db.schemas_tables.schemas_tables import (sections_table,actions_table,
-                                            records_table,usuario_table)
-from extra.helper_functions import (get_data)
 
-query_get_records=(Select(
-    records_table.c.id_record,
-    usuario_table.c.user_name,
-    actions_table.c.message,
-    sections_table.c.name,
-    records_table.c.time
-    )
-    .join(records_table,records_table.c.id_action == actions_table.c.id_action)
-    .join(usuario_table,usuario_table.c.id_usuario == records_table.c.id_user)
-    .join(sections_table,sections_table.c.id_section == records_table.c.id_section))
+# from sqlalchemy import Select,func
+# from db.schemas_tables.schemas_tables import (sections_table,actions_table,
+#                                             records_table,usuario_table)
+# from extra.helper_functions import (get_data)
+
+# query_get_records=(Select(
+#     records_table.c.id_record,
+#     usuario_table.c.user_name,
+#     actions_table.c.message,
+#     sections_table.c.name,
+#     records_table.c.time
+#     )
+#     .join(records_table,records_table.c.id_action == actions_table.c.id_action)
+#     .join(usuario_table,usuario_table.c.id_usuario == records_table.c.id_user)
+#     .join(sections_table,sections_table.c.id_section == records_table.c.id_section))
 
 
-print(get_data(query=query_get_records,section="records"))
+# print(get_data(query=query_get_records,section="records"))
+
+
+from db.querries.equipos import querry_get_equipments
+from extra.helper_functions import get_data
+
+from openpyxl import Workbook
+
+wb=Workbook()
+
+ws=wb.active
+
+ws.title="Equipos SAC"
+
+ws.append(["Equipo","Tipo","Origen","Locación","Estado"])
+
+json_data=get_data(section='equipments',query=querry_get_equipments)
+
+print(json_data)
+
+for register in json_data:
+    print('-----------------------------')
+    
+    equipment_name=register["equipment"]
+    equipment_type=register["type"]
+    equipment_origin=register["origin"]
+    equipment_location=register["location"]["value"]
+    equipment_status=register["status"]["value"]
+
+    print(f"{equipment_name}  |  {equipment_type}  |   {equipment_origin}   |   {equipment_location}    |    {equipment_status}")
+
+    ws.append([equipment_name,equipment_type,equipment_origin,equipment_location,equipment_status])
+
+
+wb.save("Equipo_Data.xlsx")
+
 
