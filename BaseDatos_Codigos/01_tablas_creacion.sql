@@ -193,6 +193,3 @@ CREATE TABLE records(
 );
 
 
-
-
-
