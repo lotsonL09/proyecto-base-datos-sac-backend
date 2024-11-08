@@ -115,7 +115,7 @@ def insert_user(user:User_DB):
     }
     query=get_insert_query(table=usuario_table,params=params)
     _=execute_insert(query=query)
-    inserted_user=get_user_db(user.user_name)
+    inserted_user=get_user(user.user_name)
     return inserted_user
 
 def update_password(id_user:int,password:str):
