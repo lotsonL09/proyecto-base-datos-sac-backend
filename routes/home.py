@@ -13,6 +13,7 @@ from db.querries.estados import query_get_status_book_equipment,get_status_data,
 
 from db.querries.ubicacion import querry_get_location,get_locations_data
 from db.querries.cursos import get_courses_data,query_get_courses
+from db.querries.convenios import get_agreements_data,querry_get_agreement
 
 from db.querries.miembros import query_get_members,get_members_data
 
@@ -121,3 +122,11 @@ async def get_records(user=Depends(auth_user)):
     #user.id
     json_data=get_records_user(user_name=user.user_name)
     return json_data
+
+@home.get('/agreements')
+async def get_agreements():
+    query=querry_get_agreement
+    result=get_agreements_data(query)
+    return {
+        "agreements":result
+    }

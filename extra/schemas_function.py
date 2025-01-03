@@ -87,11 +87,20 @@ def scheme_project(params,project_row):
             member=value
             project_dict[key]=[]
             project_dict[key].append(fix_register_3(member))
+
         elif key=='researchers' and (len(value.split(';')) > 1):
             members=value.split(';')[:-1]
             project_dict[key]=[]
             for member in members:
                 project_dict[key].append(fix_register_3(member))
+
+        elif key=='coordinator':
+            data_coordinator=value.split(';')
+            project_dict[key]={
+                'id':data_coordinator[0],
+                'first_name':data_coordinator[1],
+                'last_name':data_coordinator[2]
+            }
         else:
             project_dict[key]=value
     
@@ -165,6 +174,12 @@ def scheme_location_db(status_row):
     return {
         "id":status_row[0],
         "value":status_row[1]
+    }
+
+def scheme_agreement_db(status_row):
+    return {
+        "id":status_row[0],
+        "name":status_row[1]
     }
 
 def scheme_course_db(course_row):

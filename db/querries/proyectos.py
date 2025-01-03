@@ -24,7 +24,7 @@ investigador=miembros_table.alias('investigador')
 querry_get_proyectos=(Select(
     proyectos_table.c.idProyec,
     proyectos_table.c.Proyecto,
-    func.concat(coordinador.c.nombre,' ',coordinador.c.apellido).label('Coordinador'),
+    func.concat(coordinador.c.idMiembro,';',coordinador.c.nombre,';',coordinador.c.apellido).label('Coordinador'),
     func.aggregate_strings(
         distinct(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,')'))
             .op('ORDER BY')(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,')')),

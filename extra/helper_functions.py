@@ -65,7 +65,6 @@ def get_data(section:str,query):
         data=session.execute(query).fetchall()
     json_all=[]
     for register in data:
-        print(register)
         register_json=get_json(section,register)
         json_all.append(register_json)
     return jsonable_encoder(json_all)
