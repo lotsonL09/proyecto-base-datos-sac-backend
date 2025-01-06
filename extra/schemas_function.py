@@ -89,15 +89,16 @@ def scheme_project(params,project_row):
             project_dict[key].append(fix_register_3(member))
 
         elif key=='researchers' and (len(value.split(';')) > 1):
-            members=value.split(';')[:-1]
+            members=value.split(';')
             project_dict[key]=[]
             for member in members:
+                print(member)
                 project_dict[key].append(fix_register_3(member))
 
         elif key=='coordinator':
             data_coordinator=value.split(';')
             project_dict[key]={
-                'id':data_coordinator[0],
+                'id':int(data_coordinator[0]),
                 'first_name':data_coordinator[1],
                 'last_name':data_coordinator[2]
             }
