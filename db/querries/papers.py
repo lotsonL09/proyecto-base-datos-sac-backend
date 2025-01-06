@@ -13,7 +13,7 @@ from entities.paper import Paper,Paper_update
 from entities.share.shared import Member
 from entities.user import User
 
-querry_get_papers=(Select(
+query_get_papers=(Select(
     papers_table.c.idPaper,
     papers_table.c.título,
     func.aggregate_strings(

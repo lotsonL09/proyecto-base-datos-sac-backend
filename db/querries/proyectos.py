@@ -21,7 +21,7 @@ from entities.share.shared import Member
 coordinador=miembros_table.alias('coordinador')
 investigador=miembros_table.alias('investigador')
 
-querry_get_proyectos=(Select(
+query_get_proyectos=(Select(
     proyectos_table.c.idProyec,
     proyectos_table.c.Proyecto,
     func.concat(coordinador.c.idMiembro,';',coordinador.c.nombre,';',coordinador.c.apellido).label('Coordinador'),

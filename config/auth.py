@@ -162,6 +162,8 @@ async def register_process(user:User_DB):
     pwd_encrypted=pwd_context.hash(user.password)
     user.password=pwd_encrypted
 
+    print(user)
+
     user_data=insert_user(user=user)
 
     token=create_url_safe_token(data={"email":user.email})

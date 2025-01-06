@@ -18,7 +18,7 @@ from datetime import datetime
 
 from entities.user import User
 
-querry_get_equipments=(Select(
+query_get_equipments=(Select(
         equipo_table.c.IdEquipo,
         equipo_table.c.Equipo,
         equipo_table.c.Descripcion,

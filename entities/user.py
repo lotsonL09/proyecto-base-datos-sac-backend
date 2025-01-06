@@ -1,5 +1,8 @@
 from pydantic import BaseModel
-from enum import Enum
+
+class Category(BaseModel):
+    id:int | None = None
+    value:str | None = None
 
 class User(BaseModel):
     id: int |None =None
@@ -7,7 +10,7 @@ class User(BaseModel):
     first_name:str | None = None
     last_name:str | None = None
     email:str | None = None
-    category:str | None = None
+    id_category:int | None = None #id of category
     phone:str | None = None
     disabled:bool | None = None
 

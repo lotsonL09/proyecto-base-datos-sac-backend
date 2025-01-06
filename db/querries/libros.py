@@ -48,7 +48,7 @@ SELECT
 #             ';' #separator
 #             ).label('autores'),
 
-querry_get_books=(Select(
+query_get_books=(Select(
         libro_table.c.IdLibro,
         titulo_table.c.Titulo,
         func.aggregate_strings(

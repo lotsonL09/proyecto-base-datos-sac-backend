@@ -58,7 +58,7 @@ def scheme_user(user_row):
         'first_name':user_row[2],
         'last_name':user_row[3],
         'email':user_row[4],
-        'category':user_row[5],
+        'id_category':user_row[5],
         'phone':user_row[6],
         'disabled':user_row[7]
     }
@@ -181,6 +181,12 @@ def scheme_agreement_db(status_row):
     return {
         "id":status_row[0],
         "name":status_row[1]
+    }
+
+def scheme_category_user_db(category_row):
+    return {
+        "id":category_row[0],
+        "value":category_row[1]
     }
 
 def scheme_course_db(course_row):

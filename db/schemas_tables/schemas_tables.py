@@ -187,15 +187,12 @@ actions_table=Table(
     UniqueConstraint('action',name='unique_section')
 )
 
-records_table=Table(
-    'records',
+
+categories_user_table=Table(
+    'categories_user',
     metadata_obj,
-    Column('id_record',Integer,primary_key=True,autoincrement=True),
-    Column('id_user',Integer,ForeignKey('usuario.id_usuario')),
-    Column('id_section',Integer,ForeignKey('sections.id_section')),
-    Column('id_action',Integer,ForeignKey('actions.id_action')),
-    Column('id_on_section',Integer),
-    Column('time',DateTime)
+    Column('id',Integer,primary_key=True,autoincrement=True),
+    Column('name',String(50))
 )
 
 usuario_table=Table(
@@ -207,11 +204,21 @@ usuario_table=Table(
     Column('first_name',String(100)),
     Column('last_name',String(100)),
     Column('email',String(100)),
-    Column('category',String(50)),
+    Column('id_category',Integer,ForeignKey('categories_user.id')),
     Column('phone',String(20)),
     Column('refresh_token',String(250)),
     Column('disabled',Boolean),
     UniqueConstraint('user_name',name="uc_users"),
-    UniqueConstraint('email',name="uc_email")
+    UniqueConstraint('email',name="uc_email"),
 )
 
+records_table=Table(
+    'records',
+    metadata_obj,
+    Column('id_record',Integer,primary_key=True,autoincrement=True),
+    Column('id_user',Integer,ForeignKey('usuario.id_usuario')),
+    Column('id_section',Integer,ForeignKey('sections.id_section')),
+    Column('id_action',Integer,ForeignKey('actions.id_action')),
+    Column('id_on_section',Integer),
+    Column('time',DateTime)
+)

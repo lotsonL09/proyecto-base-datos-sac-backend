@@ -8,15 +8,13 @@ from db.db_session import engine
 
 from extra.schemas_function import scheme_agreement_db
 
-from entities.location import Location
-
 from entities.proyect import Agreement
 
-querry_get_agreement=select(convenios_table)
+query_get_agreement=select(convenios_table)
 
 Session=sessionmaker(engine)
 
-def get_agreements_data(query) -> list[Location]:
+def get_agreements_data(query) -> list[Agreement]:
     all_agreements=[]
     with Session() as session:
         results=session.execute(query).fetchall()

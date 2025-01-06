@@ -153,20 +153,6 @@ create table Paper_Autor(
 	foreign key(idMiembro)
 		references Miembros(idMiembro));
 
-CREATE TABLE Usuario(
-	id_usuario int not null auto_increment,
-    user_name VARCHAR(100) UNIQUE,
-    password VARCHAR(100),
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    category VARCHAR(100),
-    phone VARCHAR(20),
-    refresh_token VARCHAR(250),
-    disabled bool,
-    PRIMARY KEY(id_usuario)
-);
-
 CREATE TABLE sections(
 	id_section INT AUTO_INCREMENT,
     name VARCHAR(200) UNIQUE,
@@ -177,6 +163,27 @@ CREATE TABLE actions(
 	id_action INT AUTO_INCREMENT,
     action VARCHAR(200) UNIQUE,
 	PRIMARY KEY(id_action)
+);
+
+CREATE TABLE categories_user(
+	id INT AUTO_INCREMENT,
+    name VARCHAR(50),
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE Usuario(
+	id_usuario int not null auto_increment,
+    user_name VARCHAR(100) UNIQUE,
+    password VARCHAR(100),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    id_category INT,
+    phone VARCHAR(20),
+    refresh_token VARCHAR(250),
+    disabled bool,
+    FOREIGN KEY (id_category) REFERENCES categories_user(id),
+    PRIMARY KEY(id_usuario)
 );
 
 CREATE TABLE records(
@@ -191,5 +198,4 @@ CREATE TABLE records(
     FOREIGN KEY(id_action) REFERENCES actions(id_action),
     PRIMARY KEY(id_record)
 );
-
 

@@ -10,7 +10,7 @@ from extra.schemas_function import scheme_location_db
 
 from entities.location import Location
 
-querry_get_location=select(ubicacion_table)
+query_get_location=select(ubicacion_table)
 
 Session=sessionmaker(engine)
 

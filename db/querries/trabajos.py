@@ -12,7 +12,7 @@ from extra.helper_functions import (get_id_query,execute_get,
 
 from entities.user import User
 
-querry_get_trabajos=(Select(
+query_get_trabajos=(Select(
     trabajos_table.c.idTrab,
     trabajos_table.c.Título,
     cursos_table.c.Curso,
