@@ -2,7 +2,7 @@ from fastapi import APIRouter,Depends
 
 from sqlalchemy.orm import sessionmaker
 
-from db.db_session import engine
+from db.mysql_session.db_session import engine
 
 from db.querries.libros import query_get_books
 from db.querries.equipos import query_get_equipments

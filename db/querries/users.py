@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from db.schemas_tables.schemas_tables import usuario_table,roles_table
 
-from db.db_session import engine
+from db.mysql_session.db_session import engine
 
 from extra.schemas_function import scheme_user,scheme_user_db
 

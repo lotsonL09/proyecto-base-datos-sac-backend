@@ -92,7 +92,6 @@ def scheme_project(params,project_row):
             members=value.split(';')
             project_dict[key]=[]
             for member in members:
-                print(member)
                 project_dict[key].append(fix_register_3(member))
 
         elif key=='coordinator':

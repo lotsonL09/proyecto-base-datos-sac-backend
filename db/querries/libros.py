@@ -7,7 +7,7 @@ from db.schemas_tables.schemas_tables import (titulo_table,autor_table,ubicacion
                                             estado_table,persona_table,libro_table,
                                             titulo_autor_table,titulo_table,estado_table)
 
-from db.db_session import engine
+from db.mysql_session.db_session import engine
 
 from entities.book import (Borrowed_to,Book,
                         Author,Book_db,

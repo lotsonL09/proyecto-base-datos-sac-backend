@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from fastapi.encoders import jsonable_encoder
 
-from db.db_session import engine
+from db.mysql_session.db_session import engine
 
 from extra.schemas_function import (scheme_trabajo,scheme_equipment,
                                     scheme_book,scheme_user,scheme_paper,

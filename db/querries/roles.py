@@ -4,7 +4,7 @@ from db.schemas_tables.schemas_tables import roles_table
 
 from sqlalchemy.orm import sessionmaker
 
-from db.db_session import engine
+from db.mysql_session.db_session import engine
 
 from extra.schemas_function import scheme_role_db
 
