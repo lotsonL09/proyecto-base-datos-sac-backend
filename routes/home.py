@@ -14,7 +14,7 @@ from db.querries.estados import query_get_status_book_equipment,get_status_data,
 from db.querries.ubicacion import query_get_location,get_locations_data
 from db.querries.cursos import get_courses_data,query_get_courses
 from db.querries.convenios import get_agreements_data,query_get_agreement
-from db.querries.categories_user import get_categories_data,query_get_category
+from db.querries.roles import get_roles_data,query_get_role
 
 from db.querries.miembros import query_get_members,get_members_data
 
@@ -134,8 +134,8 @@ async def get_agreements():
 
 @home.get('/categories_user')
 async def get_categories():
-    query=query_get_category
-    result=get_categories_data(query)
+    query=query_get_role
+    result=get_roles_data(query)
     return {
         "agreements":result
     }

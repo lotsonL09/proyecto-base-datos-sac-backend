@@ -188,8 +188,8 @@ actions_table=Table(
 )
 
 
-categories_user_table=Table(
-    'categories_user',
+roles_table=Table(
+    'roles',
     metadata_obj,
     Column('id',Integer,primary_key=True,autoincrement=True),
     Column('name',String(50))
@@ -204,7 +204,7 @@ usuario_table=Table(
     Column('first_name',String(100)),
     Column('last_name',String(100)),
     Column('email',String(100)),
-    Column('id_category',Integer,ForeignKey('categories_user.id')),
+    Column('id_role',Integer,ForeignKey('roles.id')),
     Column('phone',String(20)),
     Column('refresh_token',String(250)),
     Column('disabled',Boolean),

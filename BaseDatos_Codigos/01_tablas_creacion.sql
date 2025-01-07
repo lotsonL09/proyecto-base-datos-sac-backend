@@ -165,7 +165,7 @@ CREATE TABLE actions(
 	PRIMARY KEY(id_action)
 );
 
-CREATE TABLE categories_user(
+CREATE TABLE roles(
 	id INT AUTO_INCREMENT,
     name VARCHAR(50),
     PRIMARY KEY(id)
@@ -178,11 +178,11 @@ CREATE TABLE Usuario(
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
-    id_category INT,
+    id_role INT,
     phone VARCHAR(20),
     refresh_token VARCHAR(250),
     disabled bool,
-    FOREIGN KEY (id_category) REFERENCES categories_user(id),
+    FOREIGN KEY (id_role) REFERENCES roles(id),
     PRIMARY KEY(id_usuario)
 );
 

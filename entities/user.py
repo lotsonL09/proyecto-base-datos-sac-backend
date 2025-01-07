@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class Category(BaseModel):
+class Role(BaseModel):
     id:int | None = None
     value:str | None = None
 
@@ -10,7 +10,7 @@ class User(BaseModel):
     first_name:str | None = None
     last_name:str | None = None
     email:str | None = None
-    id_category:int | None = None #id of category
+    id_role:int | None = None #id of category
     phone:str | None = None
     disabled:bool | None = None
 

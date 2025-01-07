@@ -1,9 +1,9 @@
 USE sac;
 
-INSERT categories_user(name) VALUES("Administrador");
-INSERT categories_user(name) VALUES("Profesor");
-INSERT categories_user(name) VALUES("Técnico");
-INSERT categories_user(name) VALUES("Asistente");
-INSERT categories_user(name) VALUES("Tesista");
-INSERT categories_user(name) VALUES("Alumno");
+INSERT roles(name) VALUES("Administrador");
+INSERT roles(name) VALUES("Profesor");
+INSERT roles(name) VALUES("Técnico");
+INSERT roles(name) VALUES("Asistente");
+INSERT roles(name) VALUES("Tesista");
+INSERT roles(name) VALUES("Alumno");
 

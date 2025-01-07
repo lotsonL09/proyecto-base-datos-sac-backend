@@ -1,7 +1,7 @@
 from sqlalchemy import Select,insert
 from sqlalchemy.orm import sessionmaker
 
-from db.schemas_tables.schemas_tables import usuario_table,categories_user_table
+from db.schemas_tables.schemas_tables import usuario_table,roles_table
 
 from db.db_session import engine
 
@@ -22,11 +22,11 @@ query_get_users=(Select(
     usuario_table.c.first_name,
     usuario_table.c.last_name,
     usuario_table.c.email,
-    categories_user_table.c.name,
+    roles_table.c.name,
     usuario_table.c.phone,
     usuario_table.c.disabled
 ).where(usuario_table.c.disabled == False)
-.where(usuario_table.c.id_category == categories_user_table.c.id)
+.where(usuario_table.c.id_role == roles_table.c.id)
 .select_from(usuario_table))
 
 
@@ -56,10 +56,10 @@ def get_user_query(params:list,filter:dict) -> User|User_DB:
     return query
 
 user_column=['id_usuario','user_name','first_name','last_name',
-                'email','id_category','phone','disabled']
+                'email','id_role','phone','disabled']
 
 user_db_column=['id_usuario','user_name','password','first_name',
-                'last_name','email','id_category','phone','refresh_token','disabled']
+                'last_name','email','id_role','phone','refresh_token','disabled']
 
 def get_user_by_id(id:int):
     query=get_user_query(params=user_column,filter={'id_usuario':id})
@@ -109,7 +109,7 @@ def insert_user(user:User_DB):
         "first_name":user.first_name,
         "last_name":user.last_name,
         "email":user.email,
-        "id_category":user.id_category,
+        "id_role":user.id_role,
         "phone":user.phone,
         "refresh_token":user.refresh_token,
         "disabled":user.disabled

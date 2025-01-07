@@ -58,7 +58,7 @@ def scheme_user(user_row):
         'first_name':user_row[2],
         'last_name':user_row[3],
         'email':user_row[4],
-        'id_category':user_row[5],
+        'id_role':user_row[5],
         'phone':user_row[6],
         'disabled':user_row[7]
     }
@@ -143,7 +143,7 @@ def scheme_user_db(user_row):
         'first_name':user_row[3],
         'last_name':user_row[4],
         'email':user_row[5],
-        'category':user_row[6],
+        'id_role':user_row[6],
         'phone':user_row[7],
         'refresh_token':user_row[8],
         'disabled':user_row[9]
@@ -183,7 +183,7 @@ def scheme_agreement_db(status_row):
         "name":status_row[1]
     }
 
-def scheme_category_user_db(category_row):
+def scheme_role_db(category_row):
     return {
         "id":category_row[0],
         "value":category_row[1]

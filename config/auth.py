@@ -41,11 +41,12 @@ Contexto de encriptacion: el schema define el algoritmo de hash que se va a usar
 pwd_context=CryptContext(schemes=['bcrypt'])
 
 
-def create_access_token(subject:str,expire_delta:int = settings.ACCESS_TOKEN_EXPIRE_MINUTES):
+def create_access_token(subject:str,id_role:int,expire_delta:int = settings.ACCESS_TOKEN_EXPIRE_MINUTES):
     expire=datetime.now(timezone.utc) + timedelta(minutes=expire_delta)
     payload={
         "sub":subject,
         "exp":expire,
+        "role":id_role,
         "mode":"access_token"
     }
     token=jwt.encode(
@@ -55,11 +56,12 @@ def create_access_token(subject:str,expire_delta:int = settings.ACCESS_TOKEN_EXP
     )
     return token
 
-def create_refresh_token(subject:str,expire_delta:int=settings.REFRESH_TOKEN_EXPIRE_MINUTES):
+def create_refresh_token(subject:str,id_role:int,expire_delta:int=settings.REFRESH_TOKEN_EXPIRE_MINUTES):
     expire=datetime.now(timezone.utc) + timedelta(minutes=expire_delta)
     payload={
         "sub":subject,
         "exp":expire,
+        "role":id_role,
         "mode":"refresh_token"
     }
     token=jwt.encode(
@@ -133,9 +135,9 @@ def login_process(user_form,password_form):
             status_code=status.HTTP_400_BAD_REQUEST,detail='The password is wrong'
         )
     
-    access_token=create_access_token(subject=user.user_name)
+    access_token=create_access_token(subject=user.user_name,id_role=user.id_role)
 
-    refresh_token=create_refresh_token(subject=user.user_name)
+    refresh_token=create_refresh_token(subject=user.user_name,id_role=user.id_role)
 
     #store the refresh token in memory | database | any storage
     update_refresh_token_db(id_user=user.id,refresh_token=refresh_token)
@@ -161,8 +163,6 @@ async def register_process(user:User_DB):
     
     pwd_encrypted=pwd_context.hash(user.password)
     user.password=pwd_encrypted
-
-    print(user)
 
     user_data=insert_user(user=user)
 
