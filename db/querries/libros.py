@@ -23,6 +23,10 @@ from entities.user import User
 
 from extra.schemas_function import scheme_book_db
 
+from db.querries.records import create_record
+
+from db.querries.estados import get_status_book_equipment
+
 Session=sessionmaker(engine)
 
 """
@@ -209,14 +213,16 @@ def create_register_book(book:Book,user:User):
         id_authors.append(author_id)
 
     id_persona=get_id_persona(persona=book.borrowed_to)
+
     for id_author in id_authors:
         _=insert_title_author(id_title=id_title,
                             id_author=id_author)
 
     id_book=insert_book(id_title=id_title,id_location=book.location,
                     id_status=book.status,id_persona=id_persona)
-
-    send_activity_record(id_user=user.id,section="books",id_on_section=id_book,action="create")
+    
+    #send_activity_record(id_user=user.id,section="books",id_on_section=id_book,action="create")
+    create_record(id_user=user.id,username=user.user_name,section="book",action='create',new_data=book)
 
     return {
         'message':'Libro agregado'

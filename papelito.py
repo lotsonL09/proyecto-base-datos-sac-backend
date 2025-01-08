@@ -190,37 +190,41 @@
 # print(get_data(query=query_get_records,section="records"))
 
 
-from db.querries.equipos import querry_get_equipments
-from extra.helper_functions import get_data
+# from db.querries.equipos import querry_get_equipments
+# from extra.helper_functions import get_data
 
-from openpyxl import Workbook
+# from openpyxl import Workbook
 
-wb=Workbook()
+# wb=Workbook()
 
-ws=wb.active
+# ws=wb.active
 
-ws.title="Equipos SAC"
+# ws.title="Equipos SAC"
 
-ws.append(["Equipo","Tipo","Origen","Locación","Estado"])
+# ws.append(["Equipo","Tipo","Origen","Locación","Estado"])
 
-json_data=get_data(section='equipments',query=querry_get_equipments)
+# json_data=get_data(section='equipments',query=querry_get_equipments)
 
-print(json_data)
+# print(json_data)
 
-for register in json_data:
-    print('-----------------------------')
+# for register in json_data:
+#     print('-----------------------------')
     
-    equipment_name=register["equipment"]
-    equipment_type=register["type"]
-    equipment_origin=register["origin"]
-    equipment_location=register["location"]["value"]
-    equipment_status=register["status"]["value"]
+#     equipment_name=register["equipment"]
+#     equipment_type=register["type"]
+#     equipment_origin=register["origin"]
+#     equipment_location=register["location"]["value"]
+#     equipment_status=register["status"]["value"]
 
-    print(f"{equipment_name}  |  {equipment_type}  |   {equipment_origin}   |   {equipment_location}    |    {equipment_status}")
+#     print(f"{equipment_name}  |  {equipment_type}  |   {equipment_origin}   |   {equipment_location}    |    {equipment_status}")
 
-    ws.append([equipment_name,equipment_type,equipment_origin,equipment_location,equipment_status])
-
-
-wb.save("Equipo_Data.xlsx")
+#     ws.append([equipment_name,equipment_type,equipment_origin,equipment_location,equipment_status])
 
 
+# wb.save("Equipo_Data.xlsx")
+
+
+json={'user':'William'}
+
+json.update({'password':1234,'year':2000})
+print(json)

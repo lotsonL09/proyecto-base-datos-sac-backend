@@ -4,6 +4,10 @@ class Role(BaseModel):
     id:int | None = None
     value:str | None = None
 
+class User_Mongo(BaseModel):
+    id:int|None = None
+    user_name:str | None = None
+
 class User(BaseModel):
     id: int |None =None
     user_name:str | None = None

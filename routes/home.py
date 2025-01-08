@@ -20,8 +20,6 @@ from db.querries.miembros import query_get_members,get_members_data
 
 from db.querries.users import query_get_users
 
-from db.querries.records import get_records_user
-
 from extra.helper_functions import get_data
 
 from config.auth import auth_user
@@ -118,11 +116,11 @@ async def get_members():
     result=get_members_data(query=query)
     return result
 
-@home.get('/records')
-async def get_records(user=Depends(auth_user)):
-    #user.id
-    json_data=get_records_user(user_name=user.user_name)
-    return json_data
+# @home.get('/records')
+# async def get_records(user=Depends(auth_user)):
+#     #user.id
+#     json_data=get_records_user(user_name=user.user_name)
+#     return json_data
 
 @home.get('/agreements')
 async def get_agreements():

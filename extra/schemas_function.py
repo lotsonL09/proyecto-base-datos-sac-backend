@@ -130,9 +130,20 @@ def scheme_equipment(params,equipment_row):
         else:
             equipment_dict[key]=value
 
-
     return equipment_dict
 
+def scheme_equipment_mongo(equipment_row):
+    return {
+        'id':equipment_row[0],
+        'equipment':equipment_row[1],
+        'description':equipment_row[2],
+        'evidence':equipment_row[3],
+        'origin':equipment_row[4],
+        'year':equipment_row[5],
+        'type':equipment_row[6],
+        'location':equipment_row[7],
+        'status':equipment_row[8]
+    }
 
 def scheme_user_db(user_row):
     return {

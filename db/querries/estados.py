@@ -8,6 +8,8 @@ from db.mysql_session.db_session import engine
 
 from extra.schemas_function import scheme_status_db
 
+from extra.helper_functions import execute_get
+
 from entities.status import Status
 
 query_get_status_book_equipment=select(estado_table)
@@ -23,4 +25,13 @@ def get_status_data(query) -> list[Status]:
             status_db=Status(**scheme_status_db(status))
             all_status.append(status_db)
     return all_status
-    
+
+def get_status_project(id):
+
+    return
+
+def get_status_book_equipment(id) ->Status:
+    query=query_get_status_book_equipment.where(estado_table.c.IdEstado == id)
+    result=execute_get(query=query)
+    status_data=Status(**scheme_status_db(status_row=result))
+    return status_data
