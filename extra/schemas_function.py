@@ -14,13 +14,21 @@ def fix_register_2(register):
         }
 
 def fix_register_3(register):
-    id=int(register.split(',')[0][1:])
-    first_name=register.split(',')[1]
-    last_name=register.split(',')[2][:-1]
+    #print(register)
+    values=register.split(',')
+    id=int(values[0][1:])
+    first_name=values[1]
+    last_name=values[2]
+    id_cargo=int(values[3])
+    value_cargo=values[4][:-1]
     return {
             'id':id,
             'first_name':first_name,
-            'last_name':last_name
+            'last_name':last_name,
+            'cargo':{
+                'id':id_cargo,
+                'value':value_cargo
+            }
         }
 
 
@@ -40,8 +48,7 @@ def scheme_book(params,book_row):
                 book_dict[key].append(fix_register(author))
         elif key == 'location':
             location=value.split(';')
-            book_dict[key]=[]
-            book_dict[key].append(fix_register_2(location))
+            book_dict[key]=fix_register_2(location)
         elif key == 'status':
             status=value.split(';')
             book_dict[key]=fix_register_2(status)
@@ -58,9 +65,29 @@ def scheme_user(user_row):
         'first_name':user_row[2],
         'last_name':user_row[3],
         'email':user_row[4],
-        'id_role':user_row[5],
-        'phone':user_row[6],
-        'disabled':user_row[7]
+        'role':{
+            'id':user_row[5],
+            'value':user_row[6]
+        },
+        'phone':user_row[7],
+        'disabled':user_row[8]
+    }
+
+def scheme_user_db(user_row):
+    return {
+        'id':user_row[0],
+        'user_name':user_row[1],
+        'password':user_row[2],
+        'first_name':user_row[3],
+        'last_name':user_row[4],
+        'email':user_row[5],
+        'role':{
+            'id':user_row[6],
+            'value':user_row[7]
+        },
+        'phone':user_row[8],
+        'refresh_token':user_row[9],
+        'disabled':user_row[10]
     }
 
 def scheme_paper(params,paper_row):
@@ -99,24 +126,41 @@ def scheme_project(params,project_row):
             project_dict[key]={
                 'id':int(data_coordinator[0]),
                 'first_name':data_coordinator[1],
-                'last_name':data_coordinator[2]
+                'last_name':data_coordinator[2],
+                'cargo':{
+                    'id':int(data_coordinator[3]),
+                    'value':data_coordinator[4]
+                }
             }
+        elif key == 'status':
+            status=value.split(';')
+            project_dict[key]=fix_register_2(status)
+        elif key == 'period':
+            period_data=value.split(';')
+            year_start=period_data[0]
+            year_end=period_data[1]
+            project_dict[key]={
+                'year_start':period_data[0],
+                'year_end':period_data[1],
+                }
         else:
             project_dict[key]=value
     
     return project_dict
-
+#'year_start','year_end'
 def scheme_trabajo(trabajo_row):
     return {
         'id':trabajo_row[0],
         'title':trabajo_row[1],
-        'course':trabajo_row[2],
-        'year':f'{trabajo_row[3]}',
-        'link':trabajo_row[4],
+        'course':{
+            'id':trabajo_row[2],
+            'value':trabajo_row[3]
+        },
+        'year':f'{trabajo_row[4]}',
+        'link':trabajo_row[5],
     }
 
 def scheme_equipment(params,equipment_row):
-
     equipment_dict=dict()
 
     for key,value in zip(params,equipment_row):
@@ -125,6 +169,9 @@ def scheme_equipment(params,equipment_row):
             location=value.split(';')
             equipment_dict[key]=fix_register_2(location)
         elif key == 'status':
+            status=value.split(';')
+            equipment_dict[key]=fix_register_2(status)
+        elif key == 'type':
             status=value.split(';')
             equipment_dict[key]=fix_register_2(status)
         else:
@@ -143,20 +190,6 @@ def scheme_equipment_mongo(equipment_row):
         'type':equipment_row[6],
         'location':equipment_row[7],
         'status':equipment_row[8]
-    }
-
-def scheme_user_db(user_row):
-    return {
-        'id':user_row[0],
-        'user_name':user_row[1],
-        'password':user_row[2],
-        'first_name':user_row[3],
-        'last_name':user_row[4],
-        'email':user_row[5],
-        'id_role':user_row[6],
-        'phone':user_row[7],
-        'refresh_token':user_row[8],
-        'disabled':user_row[9]
     }
 
 def scheme_book_db(book_row):
@@ -190,7 +223,7 @@ def scheme_location_db(status_row):
 def scheme_agreement_db(status_row):
     return {
         "id":status_row[0],
-        "name":status_row[1]
+        "value":status_row[1]
     }
 
 def scheme_role_db(category_row):
@@ -210,7 +243,7 @@ def scheme_proyect_to_db(proyect:Proyect,id_coordinator:int):
     return {
         "name":proyect.name,
         "id_coordinator":id_coordinator,
-        "id_status":proyect.status,
+        "id_status":proyect.status.id,
         "period":proyect.period
     }
 

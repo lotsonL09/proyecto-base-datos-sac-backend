@@ -135,9 +135,9 @@ def login_process(user_form,password_form):
             status_code=status.HTTP_400_BAD_REQUEST,detail='The password is wrong'
         )
     
-    access_token=create_access_token(subject=user.user_name,id_role=user.id_role)
+    access_token=create_access_token(subject=user.user_name,id_role=user.role.id)
 
-    refresh_token=create_refresh_token(subject=user.user_name,id_role=user.id_role)
+    refresh_token=create_refresh_token(subject=user.user_name,id_role=user.role.id)
 
     #store the refresh token in memory | database | any storage
     update_refresh_token_db(id_user=user.id,refresh_token=refresh_token)

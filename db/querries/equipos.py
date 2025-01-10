@@ -3,22 +3,21 @@ from fastapi import HTTPException,status
 from sqlalchemy import Select,func
 
 from db.schemas_tables.schemas_tables import (equipo_table,tipo_table,
-                                            ubicacion_table,estado_table,
-                                            records_table)
+                                            ubicacion_table,estado_table)
 
 from extra.helper_functions import (get_id,get_insert_query,
                                     execute_insert)
 
 from extra.helper_functions import (get_update_query,execute_update,execute_get,
-                                    get_delete_query,execute_delete,send_activity_record)
-
-from extra.schemas_function import scheme_equipment_mongo
-
-from entities.equipment import Equipment,Equipment_Mongo
-
-from datetime import datetime
+                                    get_delete_query,execute_delete,
+                                    get_data)
 
 from entities.user import User
+
+from entities.equipment import Equipment_Create,Type
+
+from entities.location import Location
+from entities.status import Status
 
 from db.querries.records import create_record
 
@@ -27,7 +26,7 @@ query_get_equipments=(Select(
         equipo_table.c.Equipo,
         equipo_table.c.Descripcion,
         equipo_table.c.Evidencia,
-        tipo_table.c.Tipo,
+        func.concat('(',tipo_table.c.IdTipo,';',tipo_table.c.Tipo,')'),
         equipo_table.c.Procedencia,
         equipo_table.c.Año_adquisicion,
         func.concat('(',ubicacion_table.c.IdUbi,';',ubicacion_table.c.ubicacion,')'),
@@ -39,21 +38,21 @@ query_get_equipments=(Select(
     .join(estado_table      ,estado_table.c.IdEstado   ==    equipo_table.c.IdEstado)
     )
 
-query_get_equipment=(Select(
-        equipo_table.c.IdEquipo,
-        equipo_table.c.Equipo,
-        equipo_table.c.Descripcion,
-        equipo_table.c.Evidencia,
-        equipo_table.c.Procedencia,
-        equipo_table.c.Año_adquisicion,
-        tipo_table.c.Tipo,
-        ubicacion_table.c.ubicacion,
-        estado_table.c.estado)
-    .select_from(equipo_table)
-    .join(tipo_table        ,tipo_table.c.IdTipo       ==    equipo_table.c.IdTipo)
-    .join(ubicacion_table   ,ubicacion_table.c.IdUbi   ==    equipo_table.c.IdUbi)
-    .join(estado_table      ,estado_table.c.IdEstado   ==    equipo_table.c.IdEstado)
-    )
+# query_get_equipment=(Select(
+#         equipo_table.c.IdEquipo,
+#         equipo_table.c.Equipo,
+#         equipo_table.c.Descripcion,
+#         equipo_table.c.Evidencia,
+#         equipo_table.c.Procedencia,
+#         equipo_table.c.Año_adquisicion,
+#         tipo_table.c.Tipo,
+#         ubicacion_table.c.ubicacion,
+#         estado_table.c.estado)
+#     .select_from(equipo_table)
+#     .join(tipo_table        ,tipo_table.c.IdTipo       ==    equipo_table.c.IdTipo)
+#     .join(ubicacion_table   ,ubicacion_table.c.IdUbi   ==    equipo_table.c.IdUbi)
+#     .join(estado_table      ,estado_table.c.IdEstado   ==    equipo_table.c.IdEstado)
+#     )
 
 def insert_type(type_name:str):
     params={'Tipo':type_name}
@@ -69,9 +68,11 @@ def get_id_type(type_name:str):
         return id_type
     return id_type[0]
 
-def insert_equipment(equipment:Equipment):
+def insert_equipment(equipment:Equipment_Create):
 
-    id_type=get_id_type(type_name=equipment.type)
+    if equipment.type.id is None:
+        id_type=get_id_type(type_name=equipment.type.value)
+        equipment.type.id=id_type
 
     params=dict()
 
@@ -82,9 +83,9 @@ def insert_equipment(equipment:Equipment):
             'Evidencia':equipment.evidence,
             'Procedencia':equipment.origin,
             'Año_adquisicion': 'Indefinido',
-            'IdTipo':id_type,
-            'IdUbi':equipment.location,
-            'IdEstado':equipment.status
+            'IdTipo':equipment.type.id,
+            'IdUbi':equipment.location.id,
+            'IdEstado':equipment.status.id
         }
     else:
         params={
@@ -92,10 +93,10 @@ def insert_equipment(equipment:Equipment):
             'Descripcion':equipment.description,
             'Evidencia':equipment.evidence,
             'Procedencia':equipment.origin,
-            'Año_adquisicion': equipment.year.year,
-            'IdTipo':id_type,
-            'IdUbi':equipment.location,
-            'IdEstado':equipment.status
+            'Año_adquisicion': equipment.year,
+            'IdTipo':equipment.type.id,
+            'IdUbi':equipment.location.id,
+            'IdEstado':equipment.status.id
         }
 
     query=get_insert_query(table=equipo_table,params=params)
@@ -104,18 +105,14 @@ def insert_equipment(equipment:Equipment):
     return id_equipment
 
 def get_equipment(id_equipment:int):
-    query=query_get_equipment.where(equipo_table.c.IdEquipo == id_equipment)
-    equipment_row=execute_get(query=query)
-    if not equipment_row == None:
-        equipment_scheme=scheme_equipment_mongo(equipment_row=equipment_row)
-        equipment_found=Equipment_Mongo(**equipment_scheme)
-        return equipment_found
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Equipment not found')
+    query=query_get_equipments.where(equipo_table.c.IdEquipo == id_equipment)
+    json_data=get_data(section='equipments',query=query)[0]
+    if json_data:
+        return Equipment_Create(**json_data)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Equipment not found in database')
 
-
-def get_id_equipment(equipment:Equipment):
+def get_id_equipment(equipment:Equipment_Create):
     filters={'Equipo':equipment.equipment}
     id_equipment=get_id(table=equipo_table,param='IdEquipo',filters=filters)
 
@@ -126,13 +123,12 @@ def get_id_equipment(equipment:Equipment):
         raise HTTPException(status_code=status.HTTP_302_FOUND,
                                     detail='Este equipo ya está registrado')
 
-def create_register_equipment(equipment:Equipment,user:User):
+def create_register_equipment(equipment:Equipment_Create,user:User):
 
     id_equipment=get_id_equipment(equipment=equipment)
 
     equipment.id=id_equipment
 
-    #send_activity_record(id_user=user.id,section="equipments",id_on_section=id_equipment,action="create")
     create_record(id_user=user.id,username=user.user_name,section="equipment",action='create',new_data=equipment)
 
     return {
@@ -159,20 +155,26 @@ def update_year(id_equipment:int,year):
     query=get_update_query(table=equipo_table,filters={'IdEquipo':id_equipment},params={'Año_adquisicion':year})
     execute_update(query=query)
 
-def update_type(id_equipment:int,type_name:int):
-    id_type=get_id_type(type_name=type_name)
+def update_type(id_equipment:int,type:Type) -> Type:
+    id_type=type.id
+    if id_type is None:
+        id_type=get_id_type(type_name=type.value)
+        type.id=id_type
     query=get_update_query(table=equipo_table,filters={'IdEquipo':id_equipment},params={'IdTipo':id_type})
     execute_update(query=query)
+    return type
 
-def update_location(id_equipment:int,id_location:int):
+def update_location(id_equipment:int,location:Location):
+    id_location=location.id
     query=get_update_query(table=equipo_table,filters={'IdEquipo':id_equipment},params={'IdUbi':id_location})
     execute_update(query=query)
 
-def update_status(id_equipment:int,id_status:int):
+def update_status(id_equipment:int,status:Status):
+    id_status=status.id
     query=get_update_query(table=equipo_table,filters={'IdEquipo':id_equipment},params={'IdEstado':id_status})
     execute_update(query=query)
 
-def update_register_equipment(equipment:Equipment,user:User):
+def update_register_equipment(equipment:Equipment_Create,user:User):
 
     previous_data=get_equipment(id_equipment=equipment.id)
     
@@ -185,16 +187,16 @@ def update_register_equipment(equipment:Equipment,user:User):
     if equipment.origin is not None:
         update_origin(id_equipment=equipment.id,origin=equipment.origin)
     if equipment.year is not None:
-        update_year(id_equipment=equipment.id,year=equipment.year.year)
+        update_year(id_equipment=equipment.id,year=equipment.year)
     if equipment.type is not None:
-        update_type(id_equipment=equipment.id,type_name=equipment.type)
+        type_update=update_type(id_equipment=equipment.id,type=equipment.type)
+        if equipment.type.id is None:
+            equipment.type.id=type_update
     if equipment.location is not None:
-        update_location(id_equipment=equipment.id,id_location=equipment.location)
+        update_location(id_equipment=equipment.id,location=equipment.location)
     if equipment.status is not None:
-        update_status(id_equipment=equipment.id,id_status=equipment.status)
+        update_status(id_equipment=equipment.id,status=equipment.status)
     
-    #send_activity_record(id_user=user.id,section="equipments",id_on_section=equipment.id,action="update")
-
     create_record(id_user=user.id,username=user.user_name,section="equipment",action='update',new_data=equipment,previous_data=previous_data)
 
     return {

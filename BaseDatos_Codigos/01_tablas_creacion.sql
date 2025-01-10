@@ -84,7 +84,7 @@ create table Convenios(
 create table Papers(
 	idPaper int not null auto_increment,
     título varchar(200),
-    año year,
+    año varchar(50),
     link varchar(100),
     primary key (idPaper));
     

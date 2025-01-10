@@ -8,13 +8,17 @@ class User_Mongo(BaseModel):
     id:int|None = None
     user_name:str | None = None
 
+class Role(BaseModel):
+    id:int
+    value:str
+
 class User(BaseModel):
     id: int |None =None
     user_name:str | None = None
     first_name:str | None = None
     last_name:str | None = None
     email:str | None = None
-    id_role:int | None = None #id of category
+    role:Role | None = None #id of category
     phone:str | None = None
     disabled:bool | None = None
 

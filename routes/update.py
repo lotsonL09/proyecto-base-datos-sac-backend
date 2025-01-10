@@ -4,7 +4,7 @@ from fastapi import APIRouter,Depends
 from fastapi.responses import JSONResponse
 
 from entities.book import Book_update
-from entities.equipment import Equipment
+from entities.equipment import Equipment_Create
 from entities.paper import Paper_update
 from entities.proyect import Proyect_update
 from entities.trabajo import Trabajo
@@ -31,7 +31,7 @@ async def edit_book(book:Book_update,user=Depends(auth_user)):
     return JSONResponse(result)
 
 @update.put('/equipment')
-async def edit_equipment(equipment:Equipment,user=Depends(auth_user)):
+async def edit_equipment(equipment:Equipment_Create,user=Depends(auth_user)):
     result=update_register_equipment(equipment=equipment,user=user)
     return JSONResponse(result)
 

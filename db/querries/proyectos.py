@@ -4,11 +4,14 @@ from sqlalchemy import Select,func,distinct,insert,delete
 
 from db.schemas_tables.schemas_tables import (proyec_invest_table,proyectos_table,
                                             convenios_table,miembros_table,
-                                            proyec_conv_table,estatus_table)
+                                            proyec_conv_table,estatus_table,
+                                            cargos_table)
 
-from extra.helper_functions import (execute_insert,execute_update,execute_delete,
-                                    get_id,get_insert_query,get_update_query,
-                                    get_delete_query,send_activity_record)
+from extra.helper_functions import (execute_insert,execute_update,
+                                    execute_delete,get_id,
+                                    get_insert_query,get_update_query,
+                                    get_delete_query,send_activity_record,
+                                    get_data)
 
 from entities.user import User
 
@@ -18,15 +21,20 @@ from entities.proyect import Proyect,Proyect_db,Agreement,Proyect_update,Period
 
 from entities.share.shared import Member
 
+from db.querries.records import create_record
+
 coordinador=miembros_table.alias('coordinador')
 investigador=miembros_table.alias('investigador')
+
+cargos_coordinador = cargos_table.alias('cargos_coordinador')
+cargos_investigador = cargos_table.alias('cargos_investigador')
 
 query_get_proyectos=(Select(
     proyectos_table.c.idProyec,
     proyectos_table.c.Proyecto,
-    func.concat(coordinador.c.idMiembro,';',coordinador.c.nombre,';',coordinador.c.apellido).label('Coordinador'),
+    func.concat(coordinador.c.idMiembro,';',coordinador.c.nombre,';',coordinador.c.apellido,';',cargos_coordinador.c.idCargo,';',cargos_coordinador.c.cargo).label('Coordinador'),
     func.aggregate_strings(
-        distinct(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,')'))
+        distinct(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,',',cargos_investigador.c.idCargo,',',cargos_investigador.c.cargo,')'))
             .op('ORDER BY')(func.concat('(',investigador.c.idMiembro,',',investigador.c.nombre,',',investigador.c.apellido,')')),
         ';'
     ).label('Investigadores'),
@@ -35,9 +43,8 @@ query_get_proyectos=(Select(
             .op('ORDER BY')(convenios_table.c.Convenio),
         ';'
     ).label('Convenios'),
-    estatus_table.c.Estatus,
-    proyectos_table.c.Año_in,
-    proyectos_table.c.Año_fin
+    func.concat('(',estatus_table.c.idEstatus,';',estatus_table.c.Estatus,')'),
+    func.concat(proyectos_table.c.Año_in,';',proyectos_table.c.Año_fin)
 )
 .join(proyec_invest_table   ,   proyec_invest_table.c.Proyec_idP ==   proyectos_table.c.idProyec)
 .join(investigador          ,   investigador.c.idMiembro         ==   proyec_invest_table.c.idMiembro)
@@ -45,6 +52,8 @@ query_get_proyectos=(Select(
 .join(proyec_conv_table     ,   proyec_conv_table.c.Proyec_idP   ==   proyectos_table.c.idProyec)
 .join(convenios_table       ,   convenios_table.c.idConv         ==   proyec_conv_table.c.Conv_idC)
 .join(estatus_table         ,   estatus_table.c.idEstatus        ==   proyectos_table.c.Estatus_idEst)
+.join(cargos_coordinador    ,   coordinador.c.idCargo            ==   cargos_coordinador.c.idCargo)
+.join(cargos_investigador   ,   investigador.c.idCargo           ==   cargos_investigador.c.idCargo)
 .group_by(
     proyectos_table.c.idProyec,
     proyectos_table.c.Proyecto,
@@ -56,21 +65,31 @@ query_get_proyectos=(Select(
 )
 )
 
+def get_project(id):
+    query=query_get_proyectos.where(proyectos_table.c.idProyec == id)
+    json_data=get_data(section='projects',query=query)
+    print(json_data)
+    try:
+        return Proyect(**json_data[0])
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Project not found in database')
 
 def get_insert_query_proyect(proyect:Proyect_db):
     query=get_insert_query(table=proyectos_table,params={'Proyecto':proyect.name,
                                                         'Estatus_idEst':proyect.id_status,
                                                         'Director_idDir':proyect.id_coordinator,
-                                                        'Año_in':proyect.period.year_start.year,
-                                                        'Año_fin':proyect.period.year_end.year})
+                                                        'Año_in':proyect.period.year_start,
+                                                        'Año_fin':proyect.period.year_end})
     return query
 
 def get_insert_query_coordinator(coordinator:Member):
-    query=get_insert_query(table=miembros_table,params={'nombre':coordinator.first_name,'apellido':coordinator.last_name,'idCargo':4})
+    query=get_insert_query(table=miembros_table,params={'nombre':coordinator.first_name,'apellido':coordinator.last_name,'idCargo':coordinator.cargo.id})
     return query
 
 def get_insert_query_researcher(researcher:Member):
-    query=get_insert_query(table=miembros_table,params={'nombre':researcher.first_name,'apellido':researcher.last_name,'idCargo':4})
+    query=get_insert_query(table=miembros_table,params={'nombre':researcher.first_name,'apellido':researcher.last_name,'idCargo':researcher.cargo.id})
     return query
 
 def get_insert_query_proyect_researcher(id_proyect:int,id_researcher:int):
@@ -82,7 +101,7 @@ def get_insert_querry_proyect_agreement(id_proyect:int,id_agreement:int):
     return query
 
 def get_insert_query_agreement(agreement:Agreement):
-    query=get_insert_query(table=convenios_table,params={'Convenio':agreement.name})
+    query=get_insert_query(table=convenios_table,params={'Convenio':agreement.value})
     return query
 
 def insert_proyect(proyect:Proyect_db):
@@ -126,24 +145,19 @@ def get_id_proyect(proyect:Proyect_db):
                             detail='Este proyecto ya está registrado')
 
 def get_id_coordinator(coordinator:Member):
-    id_coordinator=get_id(table=miembros_table,filters={'nombre':coordinator.first_name,'apellido':coordinator.last_name},param='idMiembro')
-    if id_coordinator is None:
+    if coordinator.id is None:
         id_coordinator=insert_coordinator(coordinator=coordinator)
         return id_coordinator
-    else:
-        return id_coordinator[0]
 
 def get_id_researcher(researcher:Member):
-    id_researcher=get_id(table=miembros_table,filters={'nombre':researcher.first_name,'apellido':researcher.last_name},param='idMiembro')
-    
-    if id_researcher is None:
+    if researcher.id is None:
         id_researcher=insert_researcher(researcher=researcher)
         return id_researcher
     
     return id_researcher[0]
 
 def get_id_agreement(agreement:Agreement):
-    id_agreement=get_id(table=convenios_table,filters={'Convenio':agreement.name},param='idConv')
+    id_agreement=get_id(table=convenios_table,filters={'Convenio':agreement.value},param='idConv')
 
     if id_agreement is None:
         id_agreement=insert_agreement(agreement=agreement)
@@ -154,38 +168,35 @@ def get_id_agreement(agreement:Agreement):
 def create_register_proyect(proyect:Proyect,user:User):
 
     #Registro del coordinador
-
-    id_coordinator=get_id_coordinator(proyect.coordinator)
+    if proyect.coordinator.id is None:
+        id_coordinator=insert_coordinator(coordinator=proyect.coordinator)
+        proyect.coordinator.id=id_coordinator
 
     #Registro del proyecto
 
-    proyect_db=Proyect_db(**scheme_proyect_to_db(proyect=proyect,id_coordinator=id_coordinator))
+    proyect_db=Proyect_db(**scheme_proyect_to_db(proyect=proyect,id_coordinator=proyect.coordinator.id))
 
     id_proyect=get_id_proyect(proyect=proyect_db)
 
+    proyect.id=id_proyect
+
     #Registro de los investigadores
 
-    id_researchers=[]
-
     for researcher in proyect.researchers:
-        researcher_id=get_id_researcher(researcher=researcher)
-        id_researchers.append(researcher_id)
-    
-    for id_resarcher in id_researchers:
-        _=insert_proyect_researcher(id_proyect=id_proyect,id_researcher=id_resarcher)
+        if researcher.id is None:
+            researcher_id=insert_researcher(researcher=researcher)
+            researcher.id=researcher_id
+        _=insert_proyect_researcher(id_proyect=proyect.id,id_researcher=researcher.id)
     
     #Registro de los convenios
 
-    id_agreements=[]
-
     for agreement in proyect.agreements:
-        id_agreement=get_id_agreement(agreement=agreement)
-        id_agreements.append(id_agreement)
+        if agreement.id is None:
+            id_agreement=insert_agreement(agreement=agreement)
+            agreement.id=id_agreement
+        _=insert_proyect_agreement(id_proyect=proyect.id,id_agreement=agreement.id)
     
-    for id_agreement in id_agreements:
-        _=insert_proyect_agreement(id_proyect=id_proyect,id_agreement=id_agreement)
-    
-    send_activity_record(id_user=user.id,section="projects",id_on_section=id_proyect,action="create")
+    create_record(id_user=user.id,username=user.user_name,section="proyect",action='create',new_data=proyect)
 
     return {
         "message":"Proyecto agregado"
@@ -196,20 +207,16 @@ def update_name(id_proyect:int,name:str):
     execute_update(query=query)
 
 def update_coordinator(id_proyect:int,coordinator:Member):
-    id_coordinator=get_id_coordinator(coordinator=coordinator)
-    query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={'Director_idDir':id_coordinator})
+    query=get_update_query(table=proyectos_table,filters={'idProyec':id_proyect},params={'Director_idDir':coordinator.id})
     execute_update(query=query)
-    return id_coordinator
 
 def get_insert_querry_proyect_researcher(id_proyect:int,id_researcher:int):
     query=get_insert_query(table=proyec_invest_table,params={'Proyec_idP':id_proyect,'idMiembro':id_researcher})
     return query
 
 def add_researcher(id_proyect:int,researcher:Member):
-    id_researcher=get_id_researcher(researcher=researcher)
-    query_insert_proyect_researcher=get_insert_query_proyect_researcher(id_proyect=id_proyect,id_researcher=id_researcher)
+    query_insert_proyect_researcher=get_insert_query_proyect_researcher(id_proyect=id_proyect,id_researcher=researcher.id)
     _=execute_insert(query=query_insert_proyect_researcher)
-    return id_researcher
 
 def delete_researcher(id_proyect:int,id_reseracher:int):
     delete_query=(delete(proyec_invest_table)
@@ -225,12 +232,12 @@ def get_insert_querry_proyect_agreement(id_proyect:int,id_agreement:int):
     return insert_query
 
 def add_agreement(id_proyect:int,agreement:Agreement):
-    id_agreement=get_id_agreement(agreement=agreement)
 
-    query_insert_proyect_agreement=get_insert_querry_proyect_agreement(id_proyect=id_proyect,id_agreement=id_agreement)
+    query_insert_proyect_agreement=get_insert_querry_proyect_agreement(id_proyect=id_proyect,id_agreement=agreement.id)
 
     _=execute_insert(query=query_insert_proyect_agreement)
-    return id_agreement
+
+    return agreement.id
 
 def delete_agreement(id_proyect:int,id_agreement:int):
     query=get_delete_query(table=proyec_conv_table,params={'Proyec_idP':id_proyect,'Conv_idC':id_agreement})
@@ -246,68 +253,54 @@ def update_date(id_proyect:int,param,year):
 
 def update_period(id_proyect:int,period:Period):
     if period.year_start is not None:
-        update_date(id_proyect=id_proyect,param='Año_in',year=period.year_start.year)
+        update_date(id_proyect=id_proyect,param='Año_in',year=period.year_start)
     if period.year_end is not None:
-        update_date(id_proyect=id_proyect,param='Año_fin',year=period.year_end.year)
+        update_date(id_proyect=id_proyect,param='Año_fin',year=period.year_end)
 
-
-#TODO: HACER UNA VERIFICACION DE LA FECHA
 
 def update_register_proyect(project:Proyect_update,user:User):
+
+    previous_data=get_project(id=project.id)
 
     if project.name is not None:
         update_name(id_proyect=project.id,name=project.name)
     
-    coordinator_updated=None
-
     if project.coordinator is not None:
-        id_coordiantor_updated=update_coordinator(id_proyect=project.id,coordinator=project.coordinator)
-
-        coordinator_updated={
-            "id":id_coordiantor_updated,
-            "first_name":project.coordinator.first_name,
-            "last_name":project.coordinator.last_name
-        }
-
-    researchers_updated=[]
+        if project.coordinator.id is None:
+            id_coordinator=insert_coordinator(coordinator=project.coordinator)
+            project.coordinator.id=id_coordinator
+        update_coordinator(id_proyect=project.id,coordinator=project.coordinator)
 
     if len(project.researchers_added) != 0:
         for researcher in project.researchers_added:
-            id_researcher=add_researcher(id_proyect=project.id,researcher=researcher)
-            researchers_updated.append({
-                "id":id_researcher,
-                "first_name":researcher.first_name,
-                "last_name":researcher.last_name
-            })
+            if researcher.id is None:
+                id_researcher=insert_researcher(researcher=researcher)
+                researcher.id=id_researcher
+            add_researcher(id_proyect=project.id,researcher=researcher)
+            
     if len(project.researchers_deleted) != 0:
         for researcher in project.researchers_deleted:
             delete_researcher(id_proyect=project.id,id_reseracher=researcher.id)
     
-    agreements_updated=[]
-
     if len(project.agreements_added) != 0:
         for agreement in project.agreements_added:
+            if agreement.id is None:
+                id_agreement=insert_agreement(agreement=agreement)
+                agreement.id=id_agreement
             id_agreement=add_agreement(id_proyect=project.id,agreement=agreement)
-            agreements_updated.append({
-                "id":id_agreement,
-                "name":agreement.name
-            })
-
+            
     if len(project.agreements_deleted) != 0:
         for agreement in project.agreements_deleted:
             delete_agreement(id_proyect=project.id,id_agreement=agreement.id)
     if project.status is not None:
-        update_status(id_proyect=project.id,id_status=project.status)
+        update_status(id_proyect=project.id,id_status=project.status.id)
     if project.period is not None:
         update_period(id_proyect=project.id,period=project.period)
 
-    send_activity_record(id_user=user.id,section="projects",id_on_section=project.id,action="update")
+    create_record(id_user=user.id,username=user.user_name,section="projects",action='update',new_data=project,previous_data=previous_data)
     
     return {
-        "id":project.id,
-        "coordinator":coordinator_updated,
-        "researchers_added":researchers_updated,
-        "agreements_added":agreements_updated
+        "response":"Proyect updated"
     }
 
 def delete_id_proyect_researcher(id_proyect:int):
@@ -329,10 +322,13 @@ def delete_proyect(id_proyect:int):
     execute_delete(query=delete_query)
 
 def delete_register_proyect(id_proyect:int,user:User):
+
+    previous_data=get_project(id=id_proyect)
+
     delete_id_proyect_researcher(id_proyect=id_proyect)
     delete_id_proyect_agreements(id_proyect=id_proyect)
     delete_proyect(id_proyect=id_proyect)
-    send_activity_record(id_user=user.id,section="projects",action="delete")
+    create_record(id_user=user.id,username=user.user_name,section="projects",action='delete',previous_data=previous_data)
     return {
         "response":'Proyecto eliminado'
     }

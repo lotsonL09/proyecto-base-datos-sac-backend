@@ -6,9 +6,14 @@ class Person(BaseModel):
 
 class Author(BaseModel):
     id:int|None=None
-    name:str|None=None
+    value:str|None=None
+
+class Cargo(BaseModel):
+    id:int 
+    value:str
 
 class Member(BaseModel):
     id:int | None = None
     first_name:str 
     last_name:str 
+    cargo:Cargo

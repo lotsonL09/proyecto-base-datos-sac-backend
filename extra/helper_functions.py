@@ -28,7 +28,7 @@ columns_data={
     'books':['id','title','authors','location','status','borrowed_to','amount'],
     'equipments':['id','equipment','description','evidence','type','origin','year','location','status'],
     'papers':['id','title','members','year','link'],
-    'projects':['id','project','coordinator','researchers','agreement','status','year_start','year_end'],
+    'projects':['id','project','coordinator','researchers','agreement','status','period'],
     'trabajos':['id','title','course','year','link']
 }
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Select,insert
+from sqlalchemy import Select,insert,func,select
 from sqlalchemy.orm import sessionmaker
 
 from db.schemas_tables.schemas_tables import usuario_table,roles_table
@@ -13,6 +13,8 @@ from extra.helper_functions import (execute_get,get_insert_query,
                                     execute_insert,execute_update,
                                     get_update_query)
 
+from db.querries.records import create_record
+
 Session=sessionmaker(engine)
 
 
@@ -22,11 +24,12 @@ query_get_users=(Select(
     usuario_table.c.first_name,
     usuario_table.c.last_name,
     usuario_table.c.email,
+    usuario_table.c.id_role,
     roles_table.c.name,
     usuario_table.c.phone,
     usuario_table.c.disabled
 ).where(usuario_table.c.disabled == False)
-.where(usuario_table.c.id_role == roles_table.c.id)
+.join(roles_table,usuario_table.c.id_role == roles_table.c.id)
 .select_from(usuario_table))
 
 
@@ -84,7 +87,14 @@ def get_user_by_email(email:str):
 def get_user(field:str,value):
     query=get_user_query(params=user_column,filter={field:value})
     user_row=execute_get(query=query)
+
     if not user_row == None:
+
+        id_role=user_row[5]
+        role=get_role(id=id_role)
+        user_row=list(user_row)
+        user_row.insert(6,role)
+
         user_scheme=scheme_user(user_row=user_row)
         user_found=User(**user_scheme)
         
@@ -92,9 +102,17 @@ def get_user(field:str,value):
     else:
         return 'User not found'
 
+def get_role(id):
+    query=select(roles_table).where(roles_table.c.id == id)
+    role=execute_get(query=query)[1]
+    return role
+
 def get_user_db(user_name:str):
     query=get_user_query(params=user_db_column,filter={'user_name':user_name})
-    user_row=execute_get(query=query)
+    user_row=list(execute_get(query=query))
+    id_role=user_row[6]
+    role=get_role(id=id_role)
+    user_row.insert(7,role)
     if not user_row == None:
         user_scheme=scheme_user_db(user_row=user_row)
         user_found=User_DB(**user_scheme)
@@ -109,7 +127,7 @@ def insert_user(user:User_DB):
         "first_name":user.first_name,
         "last_name":user.last_name,
         "email":user.email,
-        "id_role":user.id_role,
+        "id_role":user.role.id,
         "phone":user.phone,
         "refresh_token":user.refresh_token,
         "disabled":user.disabled
@@ -117,9 +135,27 @@ def insert_user(user:User_DB):
     query=get_insert_query(table=usuario_table,params=params)
     _=execute_insert(query=query)
     inserted_user=get_user(field="user_name",value=user.user_name)
+
+    create_record(id_user=user.id,username=user.user_name,section="usuarios",action='create',new_data=inserted_user)
+
     return inserted_user
 
 def update_password(id_user:int,password:str):
     query=get_update_query(table=usuario_table,filters={"id_usuario":id_user},params={"password":password})
     execute_update(query=query)
 
+def update_user(user:User):
+    
+    if user.user_name is not None:
+        pass
+    if user.first_name is not None:
+        pass
+    if user.last_name is not None:
+        pass
+    if user.email is not None:
+        pass
+    if user.role is not None:
+        pass
+    if user.phone is not None:
+        pass
+    

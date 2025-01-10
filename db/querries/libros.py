@@ -9,14 +9,16 @@ from db.schemas_tables.schemas_tables import (titulo_table,autor_table,ubicacion
 
 from db.mysql_session.db_session import engine
 
-from entities.book import (Borrowed_to,Book,
+from entities.book import (Borrowed_to,
+                        Book_Create,
                         Author,Book_db,
                         Book_update)
 
 from extra.helper_functions import (execute_insert,execute_delete,
                                     execute_update,get_id,
                                     get_update_query,get_delete_query,
-                                    get_insert_query,send_activity_record
+                                    get_insert_query,
+                                    execute_get,get_data
                                     )
 
 from entities.user import User
@@ -26,6 +28,8 @@ from extra.schemas_function import scheme_book_db
 from db.querries.records import create_record
 
 from db.querries.estados import get_status_book_equipment
+
+from db.querries.ubicacion import get_location
 
 Session=sessionmaker(engine)
 
@@ -81,6 +85,15 @@ query_get_books=(Select(
 #QUERRIES
 
 #GET ID functions
+
+def get_book(id) -> Book_Create:
+    query=query_get_books.where(libro_table.c.IdLibro==id)
+    json_data=get_data(section='books',query=query)[0]
+    if json_data:
+        return Book_Create(**json_data)
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Book not found in database')
 
 def get_book_ids(id:int):
     filters={'IdLibro':id}
@@ -163,7 +176,7 @@ def update_title(id_titulo:int,new_title=str):
     execute_update(query=query)
 
 def add_author(id_title,author:Author):
-    id_author=get_id_author(author=author.name)
+    id_author=get_id_author(author=author.value)
     query=get_insert_query(table=titulo_autor_table,params={'IdTitulo':id_title,'IdAutor':id_author})
     execute_insert(query=query)
     return id_author
@@ -202,91 +215,81 @@ def delete_title(id_title:int):
     query=get_delete_query(table=titulo_table,params={'IdTitulo':id_title})
     execute_delete(query=query)
 
-def create_register_book(book:Book,user:User):
+def create_register_book(book:Book_Create,user:User):
 
-    id_title=get_id_title(title=book.title,
+    book.title.id=get_id_title(title=book.title.value,
                     amount=book.amount)
 
-    id_authors=[]
     for author in book.authors:
-        author_id=get_id_author(author.name)
-        id_authors.append(author_id)
+        if author.id is None:
+            author_id=get_id_author(author.value)
+            author.id=author_id
+        _=insert_title_author(id_title=book.title.id,id_author=author.id)
 
-    id_persona=get_id_persona(persona=book.borrowed_to)
+    if book.borrowed_to.id:
+        id_persona=get_id_persona(persona=book.borrowed_to)
+        book.borrowed_to.id=id_persona
 
-    for id_author in id_authors:
-        _=insert_title_author(id_title=id_title,
-                            id_author=id_author)
 
-    id_book=insert_book(id_title=id_title,id_location=book.location,
-                    id_status=book.status,id_persona=id_persona)
+    id_book=insert_book(id_title=book.title.id,id_location=book.location.id,
+                    id_status=book.status.id,id_persona=id_persona)
     
-    #send_activity_record(id_user=user.id,section="books",id_on_section=id_book,action="create")
+    book.id=id_book
+
     create_record(id_user=user.id,username=user.user_name,section="book",action='create',new_data=book)
 
     return {
         'message':'Libro agregado'
     }
 
+
 def update_register_book(book:Book_update,user:User):
 
-    result=get_book_ids(book.id)
+    previous_data=get_book(id=book.id)
 
-    if result is None:
+    if previous_data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Libro no encontrado")
 
-    book_db=Book_db(**scheme_book_db(result))
-
-    if book.title is not None:
-        update_title(id_titulo=book_db.id_title,new_title=book.title)
-
-    authors_added=[]
+    if book.title.value is not None:
+        update_title(id_titulo=book.title.id,new_title=book.title.value)
 
     if len(book.authors_added) != 0:
         for author in book.authors_added:
-            id_author_added=add_author(id_title=book_db.id_title,author=author)
-            authors_added.append({
-                "id":id_author_added,
-                "value":author.name
-            })
+            id_author_added=add_author(id_title=book.title.id,author=author)
+            if author.id is None:
+                author.id=id_author_added
 
     if len(book.authors_deleted) != 0:
         for author in book.authors_deleted:
-            delete_author(id_title=book_db.id_title,author=author)
-    #
+            delete_author(id_title=book.title.id,author=author)
+
     if book.location is not None:
-        id_update_location=update_location(id_book=book_db.id_book,id_location=book.location)
-    
+        update_location(id_book=book.id,id_location=book.location.id)
+
     if book.status is not None:
-        update_status(id_book=book_db.id_book,id_status=book.status)
-    #
-    
-    new_borrowed_to=dict()
+        update_status(id_book=book.id,id_status=book.status.id)
 
     if book.borrowed_to is not None:
-        id_update_borrowed_to=update_borrowed_to(id_book=book_db.id_book,borrowed_to=book.borrowed_to)
-        new_borrowed_to={
-            'id':id_update_borrowed_to,
-            'first_name':book.borrowed_to.first_name,
-            'last_name':book.borrowed_to.last_name
-        }
-    else:
-        new_borrowed_to=None
-    
-    if book.amount is not None:
-        update_amount(id_title=book_db.id_title,amount=book.amount)
-    
-    send_activity_record(id_user=user.id,section="books",id_on_section=book.id,action="update")
+        if book.borrowed_to.id is None:
+            id_update_borrowed_to=update_borrowed_to(id_book=book.id,borrowed_to=book.borrowed_to)
+            book.borrowed_to.id=id_update_borrowed_to
 
+    if book.amount is not None:
+        update_amount(id_title=book.title.id,amount=book.amount)
+
+
+    create_record(id_user=user.id,username=user.user_name,section="book",action='update',new_data=book,previous_data=previous_data)
+    
     return {
-        'id':book_db.id_book,
-        'authors_added':authors_added,
-        'borrowed_to':new_borrowed_to
+        "response":'Libro updated'
     }
+
 
 def delete_register_book(id:int,user:User):
     result=get_book_ids(id)
+
+    previous_data=get_book(id=id)
 
     if result is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -297,7 +300,7 @@ def delete_register_book(id:int,user:User):
     delete_title_author(id_title=book_db.id_title)
     delete_title(id_title=book_db.id_title)
 
-    send_activity_record(id_user=user.id,section="books",action="delete")
+    create_record(id_user=user.id,username=user.user_name,section="book",action='delete',previous_data=previous_data)
 
     return {
         "response":'Libro eliminado'

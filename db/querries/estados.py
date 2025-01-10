@@ -1,5 +1,7 @@
 from sqlalchemy import select
 
+from fastapi import HTTPException,status
+
 from db.schemas_tables.schemas_tables import estado_table,estatus_table
 
 from sqlalchemy.orm import sessionmaker
@@ -33,5 +35,9 @@ def get_status_project(id):
 def get_status_book_equipment(id) ->Status:
     query=query_get_status_book_equipment.where(estado_table.c.IdEstado == id)
     result=execute_get(query=query)
-    status_data=Status(**scheme_status_db(status_row=result))
-    return status_data
+    if result is not None:
+        status_data=Status(**scheme_status_db(status_row=result))
+        return status_data
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail='Status not found')

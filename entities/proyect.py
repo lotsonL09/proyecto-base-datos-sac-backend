@@ -1,15 +1,16 @@
 from pydantic import BaseModel
 from datetime import datetime
 from entities.share.shared import Member
+from entities.status import Status
 
 class Period(BaseModel):
-    year_start:datetime |None =None
-    year_end:datetime |None =None
+    year_start:str |None = None
+    year_end:str |None = None
 
 #Convenios
 class Agreement(BaseModel):
     id:int | None =None
-    name:str |None =None
+    value:str |None =None
 
 class Proyect(BaseModel):
     id: int |None =None
@@ -17,7 +18,7 @@ class Proyect(BaseModel):
     coordinator:Member | None = None
     researchers:list[Member] | None = None
     agreements:list[Agreement] | None = None
-    status:int | None = None
+    status:Status | None = None
     period:Period | None = None
 
 
@@ -36,5 +37,5 @@ class Proyect_update(BaseModel):
     researchers_deleted:list[Member] | None = None
     agreements_added:list[Agreement] | None = None
     agreements_deleted:list[Agreement] | None = None
-    status:int | None = None
+    status:Status | None = None
     period:Period | None = None

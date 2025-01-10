@@ -1,7 +1,7 @@
 from fastapi import APIRouter,Depends
 
-from entities.book import Book
-from entities.equipment import Equipment
+from entities.book import Book_Create
+from entities.equipment import Equipment_Create
 from entities.paper import Paper
 from entities.proyect import Proyect
 from entities.trabajo import Trabajo
@@ -21,14 +21,13 @@ create=APIRouter(prefix='/create')
 async def root():
     return 'Create page'
 
-
 @create.post('/book')
-async def create_book(book:Book,user=Depends(auth_user)):
+async def create_book(book:Book_Create,user=Depends(auth_user)):
     result=create_register_book(book=book,user=user)
     return result
 
 @create.post('/equipment')
-async def create_equipment(equipment:Equipment,user=Depends(auth_user)):
+async def create_equipment(equipment:Equipment_Create,user=Depends(auth_user)):
     result=create_register_equipment(equipment=equipment,user=user)
     return result
 

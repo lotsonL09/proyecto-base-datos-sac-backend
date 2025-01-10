@@ -5,11 +5,6 @@ from extra.helper_functions import (get_data)
 
 from db.mongo_session.db_session import mongo_client
 
-from entities.record import (Record_Book,Record_Equipment,Record_Paper,
-                            Record_Project,Record_Trabajo,Record_User)
-
-from entities.equipment import Equipment
-
 from datetime import datetime,timezone
 
 from pydantic import BaseModel
