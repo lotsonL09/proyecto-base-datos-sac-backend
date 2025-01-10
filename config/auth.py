@@ -151,7 +151,7 @@ def login_process(user_form,password_form):
 def hash_password(password:str):
     return pwd_context.hash(password)
 
-async def register_process(user:User_DB,collection:str):
+async def register_process(user:User_DB,main_user:User):
 
     if type(get_user(field="user_name",value=user.user_name)) == User:
         raise HTTPException(status_code=status.HTTP_208_ALREADY_REPORTED,
@@ -164,7 +164,7 @@ async def register_process(user:User_DB,collection:str):
     pwd_encrypted=pwd_context.hash(user.password)
     user.password=pwd_encrypted
 
-    user_data=insert_user(user=user,collection=collection)
+    user_data=insert_user(user=user,main_user=main_user)
 
     token=create_url_safe_token(data={"email":user.email})
 

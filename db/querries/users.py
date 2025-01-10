@@ -129,7 +129,7 @@ def get_user_db(user_name:str):
     else:
         return 'User not found'
 
-def insert_user(user:User_DB,collection:str):
+def insert_user(user:User_DB,main_user:User):
     params={
         "user_name":user.user_name,
         "password":user.password,
@@ -145,7 +145,7 @@ def insert_user(user:User_DB,collection:str):
     _=execute_insert(query=query)
     inserted_user=get_user(field="user_name",value=user.user_name)
 
-    create_record(id_user=user.id,username=collection,section="usuarios",action='create',new_data=inserted_user)
+    create_record(id_user=main_user.id,username=main_user.user_name,section="usuarios",action='create',new_data=inserted_user)
 
     return inserted_user
 

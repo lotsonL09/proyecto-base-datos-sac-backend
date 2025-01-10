@@ -63,4 +63,15 @@ def create_record(id_user:int,username:str,section:str,action:str,previous_data:
             })
 
     mongo_client[database][username].insert_one(json_record)
-    
+
+def get_register_records(user_name,database:str='records'):
+    records=[]
+    results=mongo_client[database][user_name].find()
+    for result in results:
+        del result['_id']
+        records.append(result)
+
+    return {
+        'response':'Records sent.',
+        'data':records
+    }

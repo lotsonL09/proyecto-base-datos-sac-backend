@@ -15,7 +15,7 @@ from db.querries.ubicacion import query_get_location,get_locations_data
 from db.querries.cursos import get_courses_data,query_get_courses
 from db.querries.convenios import get_agreements_data,query_get_agreement
 from db.querries.roles import get_roles_data,query_get_role
-
+from db.querries.records import get_register_records
 from db.querries.miembros import query_get_members,get_members_data
 
 from db.querries.users import query_get_users
@@ -69,6 +69,11 @@ async def get_users(user=Depends(auth_user)):
     return {
         "users":result
     }
+
+@home.get('/records')
+async def get_records(user=Depends(auth_user)):
+    records=get_register_records(user_name=user.user_name)
+    return records
 
 @home.get('/status/book')
 async def get_status():

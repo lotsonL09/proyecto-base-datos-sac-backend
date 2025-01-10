@@ -22,7 +22,7 @@ async def login_root(form:OAuth2PasswordRequestForm=Depends()):
 
 @login.post('/register')
 async def register_user(user_register:User_DB,user=Depends(auth_user)): 
-    return await register_process(user=user_register,collection=user.user_name)
+    return await register_process(user=user_register,main_user=user)
 
 @login.post('/refresh_token')
 async def get_refresh_token(info_user_token:str=Depends(refresh_token)):
