@@ -18,7 +18,7 @@ class User(BaseModel):
     first_name:str | None = None
     last_name:str | None = None
     email:str | None = None
-    role:Role | None = None #id of category
+    role:Role | None = None 
     phone:str | None = None
     disabled:bool | None = None
 

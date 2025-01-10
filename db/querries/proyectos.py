@@ -257,7 +257,6 @@ def update_period(id_proyect:int,period:Period):
     if period.year_end is not None:
         update_date(id_proyect=id_proyect,param='Año_fin',year=period.year_end)
 
-
 def update_register_proyect(project:Proyect_update,user:User):
 
     previous_data=get_project(id=project.id)

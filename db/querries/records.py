@@ -62,5 +62,5 @@ def create_record(id_user:int,username:str,section:str,action:str,previous_data:
                 'newVersion':None
             })
 
-    mongo_client[f'{database}'][f'{username}'].insert_one(json_record)
+    mongo_client[database][username].insert_one(json_record)
     

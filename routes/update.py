@@ -15,6 +15,7 @@ from db.querries.papers import update_register_paper
 from db.querries.proyectos import update_register_proyect
 from db.querries.trabajos import update_register_trabajo
 from db.querries.equipos import update_register_equipment
+from db.querries.users import update_register_user
 
 from config.auth import auth_user
 
@@ -51,6 +52,6 @@ async def edit_trabajo(trabajo:Trabajo,user=Depends(auth_user)):
     return JSONResponse(result)
 
 @update.put('/user')
-async def edit_user(user=Depends(auth_user)):
-    print(user)
-    return 'Done'
+async def edit_user(user_update:User,user=Depends(auth_user)):
+    result=update_register_user(user=user_update,collection=user.user_name)
+    return JSONResponse(result)

@@ -7,6 +7,7 @@ from db.querries.papers import delete_register_paper
 from db.querries.proyectos import delete_register_proyect
 from db.querries.trabajos import delete_register_trabajo
 from db.querries.equipos import delete_register_equipment
+from db.querries.users import delete_register_user
 
 from config.auth import auth_user
 
@@ -40,4 +41,9 @@ async def book_proyect(id:int,user=Depends(auth_user)):
 @delete.delete('/equipment/{id}')
 async def book_proyect(id:int,user=Depends(auth_user)):
     result=delete_register_equipment(id_equipment=id,user=user)
+    return JSONResponse(result)
+
+@delete.delete('/user/{id}')
+async def book_proyect(id:int,user=Depends(auth_user)):
+    result=delete_register_user(id_user=id,user=user)
     return JSONResponse(result)

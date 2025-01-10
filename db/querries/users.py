@@ -1,4 +1,4 @@
-from sqlalchemy import Select,insert,func,select
+from sqlalchemy import Select,insert,func,select,delete
 from sqlalchemy.orm import sessionmaker
 
 from db.schemas_tables.schemas_tables import usuario_table,roles_table
@@ -11,9 +11,11 @@ from entities.user import User_DB,User
 
 from extra.helper_functions import (execute_get,get_insert_query,
                                     execute_insert,execute_update,
-                                    get_update_query)
+                                    get_update_query,execute_delete)
 
 from db.querries.records import create_record
+
+from db.mongo_session.db_session import mongo_client
 
 Session=sessionmaker(engine)
 
@@ -68,7 +70,14 @@ def get_user_by_id(id:int):
     query=get_user_query(params=user_column,filter={'id_usuario':id})
     user_row=execute_get(query=query)
     if not user_row == None:
+
+        id_role=user_row[5]
+        role=get_role(id=id_role)
+        user_row=list(user_row)
+        user_row.insert(6,role)
+
         user_scheme=scheme_user(user_row=user_row)
+        
         user_found=User(**user_scheme)
         return user_found
     else:
@@ -120,7 +129,7 @@ def get_user_db(user_name:str):
     else:
         return 'User not found'
 
-def insert_user(user:User_DB):
+def insert_user(user:User_DB,collection:str):
     params={
         "user_name":user.user_name,
         "password":user.password,
@@ -136,7 +145,7 @@ def insert_user(user:User_DB):
     _=execute_insert(query=query)
     inserted_user=get_user(field="user_name",value=user.user_name)
 
-    create_record(id_user=user.id,username=user.user_name,section="usuarios",action='create',new_data=inserted_user)
+    create_record(id_user=user.id,username=collection,section="usuarios",action='create',new_data=inserted_user)
 
     return inserted_user
 
@@ -144,18 +153,50 @@ def update_password(id_user:int,password:str):
     query=get_update_query(table=usuario_table,filters={"id_usuario":id_user},params={"password":password})
     execute_update(query=query)
 
-def update_user(user:User):
-    
+def update_user_field(id_user:int,field:str ,value:str):
+    query=get_update_query(table=usuario_table,filters={'id_usuario':id_user},params={field:value})
+    execute_update(query=query)
+
+def update_register_user(user:User,collection:str):
+
+    previous_data=get_user_by_id(id=user.id)
+
     if user.user_name is not None:
-        pass
+        update_user_field(id_user=user.id,field='user_name',value=user.user_name)
+
+        mongo_client["records"][previous_data.user_name].rename(new_name=user.user_name)
+
     if user.first_name is not None:
-        pass
+        update_user_field(id_user=user.id,field='first_name',value=user.first_name)
     if user.last_name is not None:
-        pass
+        update_user_field(id_user=user.id,field='last_name',value=user.last_name)
     if user.email is not None:
-        pass
+        update_user_field(id_user=user.id,field='email',value=user.email)
     if user.role is not None:
-        pass
+        update_user_field(id_user=user.id,field='id_role',value=user.role.id)
     if user.phone is not None:
-        pass
+        update_user_field(id_user=user.id,field='phone',value=user.phone)
     
+    create_record(id_user=user.id,username=collection,section="users",action='update',new_data=user,previous_data=previous_data)
+
+    return {
+        'response':'User updated'
+    }
+
+def delete_user(id:int):
+    delete_query=(delete(usuario_table).where(
+        usuario_table.c.id_usuario == id,
+    ))
+    execute_delete(query=delete_query)
+
+def delete_register_user(id_user:int,user:User):
+
+    previous_data=get_user_by_id(id=id_user)
+
+    delete_user(id=id_user)
+
+    create_record(id_user=user.id,username=user.user_name,section="users",action='delete',previous_data=previous_data)
+
+    return {
+        "response":'User eliminado'
+    }
