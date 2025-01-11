@@ -52,6 +52,9 @@ def scheme_book(params,book_row):
         elif key == 'status':
             status=value.split(';')
             book_dict[key]=fix_register_2(status)
+        elif key == 'title':
+            status=value.split(';')
+            book_dict[key]=fix_register_2(status)
         else:
             book_dict[key]=value
 
@@ -208,11 +211,27 @@ def scheme_status_db(status_row):
     }
 
 def scheme_member_db(member_row):
+    #return fix_register_3(register=member_row)
+    print(member_row)
+    id=int(member_row[0])
+    first_name=member_row[1]
+    last_name=member_row[2]
+    id_cargo=int(member_row[3])
+    value_cargo=member_row[4]
     return {
-        "id":member_row[0],
-        "first_name":member_row[1],
-        "last_name":member_row[2]
-    }
+            'id':id,
+            'first_name':first_name,
+            'last_name':last_name,
+            'cargo':{
+                'id':id_cargo,
+                'value':value_cargo
+            }
+        }
+    # return {
+    #     "id":member_row[0],
+    #     "first_name":member_row[1],
+    #     "last_name":member_row[2]
+    # }
 
 def scheme_location_db(status_row):
     return {

@@ -58,7 +58,7 @@ SELECT
 
 query_get_books=(Select(
         libro_table.c.IdLibro,
-        titulo_table.c.Titulo,
+        func.concat('(',titulo_table.c.IdTitulo,';',titulo_table.c.Titulo,')'),
         func.aggregate_strings(
             func.concat('(',autor_table.c.IdAutor,',',autor_table.c.Autor,')'),';'
         ).label('autores'),
@@ -241,7 +241,6 @@ def create_register_book(book:Book_Create,user:User):
     return {
         'message':'Libro agregado'
     }
-
 
 def update_register_book(book:Book_update,user:User):
 
