@@ -11,7 +11,7 @@ users=APIRouter(prefix='/users',
                 responses={status.HTTP_404_NOT_FOUND:{"message":"Page not found"}})
 
 async def get_current_user(user:User=Depends(auth_user)):
-    user=get_user(user_name=user.user_name)
+    user=get_user(field="user_name",value=user.user_name)
     if user.disabled:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Inactive user',
