@@ -251,6 +251,12 @@ def scheme_role_db(category_row):
         "value":category_row[1]
     }
 
+def scheme_types_db(category_row):
+    return {
+        "id":category_row[0],
+        "value":category_row[1]
+    }
+
 def scheme_course_db(course_row):
     return {
         "id":course_row[0],

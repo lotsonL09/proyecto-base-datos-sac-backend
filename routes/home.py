@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from db.mysql_session.db_session import engine
 
 from db.querries.libros import query_get_books
-from db.querries.equipos import query_get_equipments
+from db.querries.equipos import query_get_equipments,get_types_data
 from db.querries.papers import query_get_papers
 from db.querries.proyectos import query_get_proyectos
 from db.querries.trabajos import query_get_trabajos
@@ -126,6 +126,13 @@ async def get_members():
 #     #user.id
 #     json_data=get_records_user(user_name=user.user_name)
 #     return json_data
+
+@home.get('/equipment_type')
+async def get_equiment_types():
+    result=get_types_data()
+    return {
+        'equipment_types':result
+    }
 
 @home.get('/agreements')
 async def get_agreements():

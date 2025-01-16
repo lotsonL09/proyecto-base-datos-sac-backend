@@ -1,6 +1,6 @@
 from fastapi import HTTPException,status
 
-from sqlalchemy import Select,func
+from sqlalchemy import Select,func,select
 
 from db.schemas_tables.schemas_tables import (equipo_table,tipo_table,
                                             ubicacion_table,estado_table)
@@ -17,9 +17,16 @@ from entities.user import User
 from entities.equipment import Equipment_Create,Type
 
 from entities.location import Location
+
+from sqlalchemy.orm import sessionmaker
+
+from db.mysql_session.db_session import engine
+
 from entities.status import Status
 
 from db.querries.records import create_record
+
+from extra.schemas_function import scheme_types_db
 
 query_get_equipments=(Select(
         equipo_table.c.IdEquipo,
@@ -38,21 +45,18 @@ query_get_equipments=(Select(
     .join(estado_table      ,estado_table.c.IdEstado   ==    equipo_table.c.IdEstado)
     )
 
-# query_get_equipment=(Select(
-#         equipo_table.c.IdEquipo,
-#         equipo_table.c.Equipo,
-#         equipo_table.c.Descripcion,
-#         equipo_table.c.Evidencia,
-#         equipo_table.c.Procedencia,
-#         equipo_table.c.Año_adquisicion,
-#         tipo_table.c.Tipo,
-#         ubicacion_table.c.ubicacion,
-#         estado_table.c.estado)
-#     .select_from(equipo_table)
-#     .join(tipo_table        ,tipo_table.c.IdTipo       ==    equipo_table.c.IdTipo)
-#     .join(ubicacion_table   ,ubicacion_table.c.IdUbi   ==    equipo_table.c.IdUbi)
-#     .join(estado_table      ,estado_table.c.IdEstado   ==    equipo_table.c.IdEstado)
-#     )
+Session=sessionmaker(engine)
+
+query_get_types_equipment=(select(tipo_table))
+
+def get_types_data() -> list[Type]:
+    all_types=[]
+    with Session() as session:
+        results=session.execute(query_get_types_equipment).fetchall()
+        for role in results:
+            role_db=Type(**scheme_types_db(role))
+            all_types.append(role_db)
+    return all_types
 
 def insert_type(type_name:str):
     params={'Tipo':type_name}
