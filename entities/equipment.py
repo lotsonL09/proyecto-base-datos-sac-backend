@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from datetime import datetime
 from entities.location import Location
 from entities.status import Status
+from fastapi import UploadFile,File
+
 
 class Type(BaseModel):
     id:int | None = None
@@ -17,3 +19,6 @@ class Equipment_Create(BaseModel):
     type:Type | None = None
     location: Location | None = None
     status: Status | None = None
+
+class Equipment_Evidence(BaseModel):
+    evidence:UploadFile | None = File(...)

@@ -224,7 +224,11 @@
 # wb.save("Equipo_Data.xlsx")
 
 
-json={'user':'William'}
+# json={'user':'William'}
 
-json.update({'password':1234,'year':2000})
-print(json)
+# json.update({'password':1234,'year':2000})
+# print(json)
+
+from datetime import datetime
+
+print(datetime.now().date().strftime("%Y_%m_%d"))

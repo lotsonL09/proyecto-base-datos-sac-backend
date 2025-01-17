@@ -22,7 +22,7 @@ from db.schemas_tables.schemas_tables import usuario_table
 
 from config.config import settings
 
-from config.mail import create_url_safe_token, decode_url_safe_token,create_message,mail
+from config.mail import create_url_safe_token, decode_url_safe_token,create_message,mail,make_email_html
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl='token')
 
@@ -168,19 +168,10 @@ async def register_process(user:User_DB):
 
     token=create_url_safe_token(data={"email":user.email})
 
-    #TODO: MOdificar luego
-    link=f"http://{settings.DOMAIN}/login/verify/{token}"
-
-    html_message=f"""
-
-    <h1> Verify your Email </h1>
-    <p>Please click this link <a href="{link}">link</a> to verify your email</p>
-
-
-    """
+    html_message=make_email_html(user=user)
 
     message=create_message(recipients=[user.email],
-                        subject="Verify your email",
+                        subject="¡Bienvenido al Mítico!",
                         body=html_message)
     
     await mail.send_message(message=message)

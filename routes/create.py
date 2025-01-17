@@ -1,7 +1,7 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter,Depends,UploadFile,File,Form
 
 from entities.book import Book_Create
-from entities.equipment import Equipment_Create
+from entities.equipment import Equipment_Create,Equipment_Evidence
 from entities.paper import Paper
 from entities.proyect import Proyect
 from entities.trabajo import Trabajo
@@ -15,7 +15,21 @@ from db.querries.equipos import create_register_equipment
 
 from config.auth import auth_user
 
+from extra.helper_functions import upload_to_cloudinary
+
 create=APIRouter(prefix='/create')
+
+@create.post('/equipment_evidence')
+async def send_evidence(evidence:UploadFile=File(...),
+                        equipment_name:str=Form(...)
+                        ,user=Depends(auth_user)):
+    image_content = await evidence.read()
+    url_image=upload_to_cloudinary(image=image_content,
+                        equipment_name=equipment_name)
+    return {
+        "response":"Image sent",
+        "url":url_image
+    }
 
 @create.get('/')
 async def root():

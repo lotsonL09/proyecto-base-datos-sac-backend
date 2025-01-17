@@ -121,12 +121,6 @@ async def get_members():
     result=get_members_data(query=query)
     return result
 
-# @home.get('/records')
-# async def get_records(user=Depends(auth_user)):
-#     #user.id
-#     json_data=get_records_user(user_name=user.user_name)
-#     return json_data
-
 @home.get('/equipment_type')
 async def get_equiment_types():
     result=get_types_data()

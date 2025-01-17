@@ -22,6 +22,10 @@ from config.mail import mail,create_message
 
 from datetime import datetime,timedelta,timezone
 
+from datetime import datetime
+
+import cloudinary.uploader
+
 Session=sessionmaker(engine)
 
 columns_data={
@@ -36,9 +40,25 @@ queries_data={
     
 }
 
-#HACER DESPUES EL DE MIEMBROS
+cloudinary.config(
+    cloud_name='dseolgqh1',
+    api_key='322411164772336',
+    api_secret='CPS76vFQEXOh26K2IEclNAY7HE8',
+    secure=True
+)
 
-#TODO: OPTIMIZAR ESTA FUNCION
+def upload_to_cloudinary(image,equipment_name:str) -> list[str]:
+
+    date=datetime.now()
+
+    public_id=f"{equipment_name}_evidence_{date}"
+
+    response_cloud=cloudinary.uploader.upload(image,
+                        public_id=public_id,
+                        folder="evidencia_equipos")
+    url_file=response_cloud["secure_url"]
+
+    return url_file
 
 def get_json(section:str,data:Tuple):
 
@@ -54,10 +74,6 @@ def get_json(section:str,data:Tuple):
         return scheme_trabajo(trabajo_row=data)
     if section == 'users':
         return scheme_user(data)
-    if section == 'records':
-        data_user=data[:-2]
-        table_name,id_on_section=data[-2:]
-        return scheme_record(data_user)
 
 
 def get_data(section:str,query):
