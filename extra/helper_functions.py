@@ -29,7 +29,7 @@ import cloudinary.uploader
 Session=sessionmaker(engine)
 
 columns_data={
-    'books':['id','title','authors','location','status','borrowed_to','amount'],
+    'books':['id','title','authors','location','status','amount'],
     'equipments':['id','equipment','description','evidence','type','origin','year','location','status'],
     'papers':['id','title','members','year','link'],
     'projects':['id','project','coordinator','researchers','agreement','status','period'],
@@ -61,7 +61,6 @@ def upload_to_cloudinary(image,equipment_name:str) -> list[str]:
     return url_file
 
 def get_json(section:str,data:Tuple):
-
     if section == 'books':
         return scheme_book(params=columns_data[section],book_row=data)
     if section == 'equipments':
@@ -124,6 +123,11 @@ def get_delete_query(table:str,params:dict):
 def execute_get(query):
     with Session() as session:
         result=session.execute(query).first()
+        return result
+
+def execute_get_all(query):
+    with Session() as session:
+        result=session.execute(query).fetchall()
         return result
 
 def execute_insert(query):

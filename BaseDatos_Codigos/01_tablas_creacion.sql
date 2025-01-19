@@ -1,55 +1,20 @@
 create database SAC;
 use SAC;
-create table autor (
-	IdAutor int not null auto_increment,
-    Autor varchar(200),
-    primary key (IdAutor));
 
-create table ubicación(
-	IdUbi int not null,
-    ubicacion varchar(45),
-    primary key(IdUbi));
-    
-create table estado(
-	IdEstado int not null,
-    estado varchar(45),
-    primary key(IdEstado));
-
-create table persona(
-	IdPersona int not null auto_increment,
-    Nombre varchar (75),
-    Apellido varchar (75),
-    Primary Key (IdPErsona));
-    
-create table titulo(
-	IdTitulo int not null auto_increment,
-    titulo varchar(300),
-    cantidad int,
-    primary key(Idtitulo));
-    
-create table libro(
-	IdLibro int not null auto_increment,
-    IdTitulo int,
-    IdUbi int,
-    IdEstado int,
-    IdPersona int,
-    primary key (IdLibro),
-    foreign key (IdTitulo) references titulo(Idtitulo),
-    foreign key (idUbi) references ubicación(idUbi),
-    foreign key (IdPersona) references persona(IdPersona),
-	foreign key (idEstado) references estado(idEstado));
-    
-create table Titulo_autor(
-	IdTitulo int not null,
-    IdAutor int not null,
-    primary key(IdTitulo, Idautor),
-	foreign key (IdTitulo) references titulo(IdTitulo),
-	foreign key (idAutor) references autor(idAutor));
-    
 create table tipo(
 	IdTipo int not null auto_increment,
     Tipo varchar(100),
     primary key(IdTipo));
+    
+create table ubicación(
+	IdUbi int not null,
+    ubicacion varchar(45),
+    primary key(IdUbi));
+
+create table estado(
+	IdEstado int not null,
+    estado varchar(45),
+    primary key(IdEstado));
 
 create table equipo(
 	IdEquipo int not null auto_increment,
@@ -198,4 +163,35 @@ CREATE TABLE records(
     FOREIGN KEY(id_action) REFERENCES actions(id_action),
     PRIMARY KEY(id_record)
 );
+
+create table autor (
+	IdAutor int not null auto_increment,
+    Autor varchar(200),
+    primary key (IdAutor));
+    
+create table libro(
+	IdLibro int not null auto_increment,
+    Titulo VARCHAR(250),
+    IdUbi int,
+    IdEstado int,
+    Cantidad int,
+    primary key (IdLibro),
+    foreign key (idUbi) references ubicación(idUbi),
+	foreign key (idEstado) references estado(idEstado));
+    
+create table Libro_autor(
+	IdLibro int not null,
+    IdAutor int not null,
+    primary key(IdLibro, IdAutor),
+	foreign key (IdLibro) references libro(IdLibro),
+	foreign key (idAutor) references autor(idAutor));
+
+create table libro_usuario(
+	IdLibro int not null,
+    IdUsuario int not null,
+    primary key(IdLibro, IdUsuario),
+	foreign key (IdLibro) references libro(IdLibro),
+	foreign key (IdUsuario) references Usuario(id_usuario)
+);
+
 

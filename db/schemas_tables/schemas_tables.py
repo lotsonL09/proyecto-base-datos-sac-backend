@@ -27,37 +27,28 @@ estado_table=Table(
     Column('estado',String(45))
 )
 
-persona_table=Table(
-    'persona',
-    metadata_obj,
-    Column('IdPersona',Integer,primary_key=True,autoincrement=True),
-    Column('Nombre',String(75)),
-    Column('Apellido',String(75)),
-)
-
-titulo_table=Table(
-    'titulo',
-    metadata_obj,
-    Column('IdTitulo',Integer,primary_key=True,autoincrement=True),
-    Column('Titulo',String(300)),
-    Column('Cantidad',Integer)
-)
-
 libro_table=Table(
     'libro',
     metadata_obj,
     Column('IdLibro',Integer,primary_key=True,autoincrement=True),
-    Column('IdTitulo',ForeignKey('libro.IdTitulo')),
+    Column('Titulo',String),
     Column('IdUbi',ForeignKey('ubicación.IdUbi')),
-    Column('IdPersona',ForeignKey('persona.IdPersona')),
     Column('IdEstado',ForeignKey('estado.IdEstado')),
+    Column('Cantidad',String),
 )
 
-titulo_autor_table=Table(
-    'Titulo_autor',
+libro_autor_table=Table(
+    'libro_autor',
     metadata_obj,
-    Column('IdTitulo',ForeignKey('titulo.IdTitulo'),primary_key=True),
+    Column('IdLibro',ForeignKey('libro.IdLibro'),primary_key=True),
     Column('IdAutor',ForeignKey('autor.IdAutor'),primary_key=True)
+)
+
+libro_usuario_table=Table(
+    'libro_usuario',
+    metadata_obj,
+    Column('IdLibro',ForeignKey('libro.IdLibro'),primary_key=True),
+    Column('IdUsuario',ForeignKey('Usuario.id_usuario'),primary_key=True)
 )
 
 tipo_table=Table(
@@ -186,7 +177,6 @@ actions_table=Table(
     Column('message',String),
     UniqueConstraint('action',name='unique_section')
 )
-
 
 roles_table=Table(
     'roles',

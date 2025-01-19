@@ -33,7 +33,11 @@ def fix_register_3(register):
 
 
 def scheme_book(params,book_row):
+    from db.querries.libros import get_borrowed_to
     book_dict=dict()
+    
+
+    borrowed=0
 
     for key,value in zip(params,book_row):
         
@@ -52,10 +56,16 @@ def scheme_book(params,book_row):
         elif key == 'status':
             status=value.split(';')
             book_dict[key]=fix_register_2(status)
-        elif key == 'title':
-            status=value.split(';')
-            book_dict[key]=fix_register_2(status)
         else:
+            if key == 'id':
+                users_borrowed=get_borrowed_to(id_libro=value)
+                if type(users_borrowed) is str:
+                    borrowed=0
+                else:
+                    borrowed=len(users_borrowed)
+                book_dict['borrowed_to']=users_borrowed
+            elif key == 'amount':
+                book_dict['available']=value-borrowed
             book_dict[key]=value
 
     return book_dict
@@ -150,7 +160,8 @@ def scheme_project(params,project_row):
             project_dict[key]=value
     
     return project_dict
-#'year_start','year_end'
+
+
 def scheme_trabajo(trabajo_row):
     return {
         'id':trabajo_row[0],
@@ -198,10 +209,10 @@ def scheme_equipment_mongo(equipment_row):
 def scheme_book_db(book_row):
     return {
         "id_book":book_row[0],
-        "id_title":book_row[1],
+        "title":book_row[1],
         "id_location":book_row[2],
         "id_status":book_row[3],
-        "id_persona":book_row[4]
+        "amount":book_row[4]
     }
 
 def scheme_status_db(status_row):
